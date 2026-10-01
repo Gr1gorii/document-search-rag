@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>document-search-rag - FastAPI documentation assistant</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <script src="/static/app.js" defer></script>
+</head>
+<body>
+<main>
+  <h1>document-search-rag</h1>
+  <p class="intro">Ask in English about the selected tutorial pages. Search the documentation or generate an answer with sources.</p>
+  <form id="ask-form">
+    <label for="question">Question</label>
+    <textarea id="question" name="question" maxlength="600" minlength="3" required placeholder="How do I raise an HTTPException with a 404 status?"></textarea>
+    <div class="controls">
+      <label for="mode">Mode</label>
+      <select id="mode"><option value="rag">Answer with sources</option><option value="search">Search excerpts only</option></select>
+      <button id="submit" type="submit">Submit question</button>
+    </div>
+  </form>
+  <div class="examples" aria-label="Example questions">
+    <span>Examples:</span>
+    <button type="button" data-question="How do I declare a required query parameter?">Required query parameters</button>
+    <button type="button" data-question="When do background tasks run?">Background tasks</button>
+    <button type="button" data-question="How do I configure Kubernetes autoscaling for FastAPI?">Outside this corpus</button>
+  </div>
+  <section id="result" class="result" aria-label="Result" aria-live="polite">
+    <p>Submit a question to see the answer or matching excerpts.</p>
+  </section>
+  <footer>
+    <p><span id="pages">12</span> source pages / <span id="chunks">-</span> excerpts / <span id="model">qwen3:1.7b</span><br><span id="health">Checking local model...</span></p>
+    <p>Scope: parameters, request bodies, responses, errors, dependencies, background tasks, middleware, CORS, testing and file uploads.</p>
+    <p>Source links let you check an answer. They do not guarantee that every claim is correct. The assistant may decline when it cannot find enough evidence.</p>
+    <a href="/docs">API documentation</a>
+  </footer>
+</main>
+</body>
+</html>

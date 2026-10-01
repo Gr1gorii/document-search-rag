@@ -1,0 +1,56 @@
+{
+  "run_at": "2026-09-30T19:34:39.925804+00:00",
+  "model": "qwen3:1.7b",
+  "dataset": "eval/fresh-probe.json",
+  "platform": "macOS-26.7.1-arm64-arm-64bit",
+  "min_score": 2.0,
+  "min_coverage": 0.6,
+  "top_k": 4,
+  "dataset_sha256": "6ae1ae2d89debe8044f0ab279cf440ba49b8b9d4c40cc47ed330972292daae4a",
+  "corpus_sha256": "3c41db00cf88056dd348ead56654588a1edf94d53328d375368fcb6cb0d5a4d4",
+  "metrics": {
+    "questions": 12,
+    "answerable": 6,
+    "unanswerable": 6,
+    "reviewed_questions": 0,
+    "search": {
+      "gold_page_hit_at_1": 0.6667,
+      "gold_page_hit_at_4": 1.0,
+      "mrr_at_4": 0.8056,
+      "evidence_keyword_pass_at_4": 0.6667,
+      "gate_abstention_on_unanswerable": 1.0,
+      "latency": {
+        "p50_ms": 0.31,
+        "p95_ms": 3.44
+      }
+    },
+    "rag": {
+      "completed": 12,
+      "errors": 0,
+      "answered": 4,
+      "answer_keyword_pass_on_answerable": 0.5,
+      "answer_and_gold_citation_proxy": 0.3333,
+      "abstention_recall": 1.0,
+      "false_abstention_on_answerable": 0.3333,
+      "citation_page_precision": 0.75,
+      "citation_id_validity": 1.0,
+      "latency_all": {
+        "p50_ms": 0.68,
+        "p95_ms": 2683.9
+      },
+      "latency_answered": {
+        "p50_ms": 2212.37,
+        "p95_ms": 2683.9
+      }
+    }
+  },
+  "limitations": [
+    "Draft labels; no independent manual review of the answers.",
+    "Keyword matching is an answer-content proxy, not semantic correctness.",
+    "Gold-page relevance and citation ID validity do not prove sentence-level support.",
+    "The dataset was authored for this small corpus; no independent held-out benchmark.",
+    "The coverage guard was added after observing failures on this development set.",
+    "Latency is from one sequential local run; model loading and hardware affect results."
+  ],
+  "latency_percentile_definition": "p50=median; p95=nearest rank ceil(0.95*n)"
+}

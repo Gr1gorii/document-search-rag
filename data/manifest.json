@@ -1,0 +1,66 @@
+{
+  "fetched_at": "2026-09-30T19:04:49.430984+00:00",
+  "source": "Official FastAPI tutorial (English)",
+  "pages": [
+    {
+      "page": "path-params",
+      "url": "https://fastapi.tiangolo.com/tutorial/path-params/",
+      "sha256": "b089dd19b7ab128732488caf0e1d59551502dca0ecdd181fd4ace36681918b9e"
+    },
+    {
+      "page": "query-params",
+      "url": "https://fastapi.tiangolo.com/tutorial/query-params/",
+      "sha256": "b196a2f700197245b1c0fd97a0c7fda2e33f5e2989616da7f75b6af40b202389"
+    },
+    {
+      "page": "body",
+      "url": "https://fastapi.tiangolo.com/tutorial/body/",
+      "sha256": "65e2ca1d95404be47017a5fadca19745aed73cb9ded164338ba9f119729a0e24"
+    },
+    {
+      "page": "response-model",
+      "url": "https://fastapi.tiangolo.com/tutorial/response-model/",
+      "sha256": "b0c6ad3a0c4fd1e7d13688d1134aad808fff4d36736630aae9e4b2cb1af0947d"
+    },
+    {
+      "page": "response-status-code",
+      "url": "https://fastapi.tiangolo.com/tutorial/response-status-code/",
+      "sha256": "2f172189c0a30a0a6af278fc27a6d34202c52fa58d6151dcbee89f578b0635df"
+    },
+    {
+      "page": "handling-errors",
+      "url": "https://fastapi.tiangolo.com/tutorial/handling-errors/",
+      "sha256": "14bf03c36ca2011ae813abc09c2604ae18fc13077363ca12c91b2862304c8cb7"
+    },
+    {
+      "page": "dependencies",
+      "url": "https://fastapi.tiangolo.com/tutorial/dependencies/",
+      "sha256": "224ef99af9d25db0ae8340632fce2aa82660296d680fc9117f22dc0e0d159200"
+    },
+    {
+      "page": "background-tasks",
+      "url": "https://fastapi.tiangolo.com/tutorial/background-tasks/",
+      "sha256": "e028e0989d4a79cb0709ce9f2e7d414d65d86b44493cbb5312ef521edf420dd8"
+    },
+    {
+      "page": "middleware",
+      "url": "https://fastapi.tiangolo.com/tutorial/middleware/",
+      "sha256": "f281b640a0b470bd94ebcbe21610086ea7b7c26a4575d9237b7d96f0337f9428"
+    },
+    {
+      "page": "cors",
+      "url": "https://fastapi.tiangolo.com/tutorial/cors/",
+      "sha256": "f5afc49742c88154ed74d149e6970378d3e66fd6c2acbbe773dc22181810f285"
+    },
+    {
+      "page": "testing",
+      "url": "https://fastapi.tiangolo.com/tutorial/testing/",
+      "sha256": "a44ac3e2c70c039f38917a53b05cee034f70b1c8242d87f0a41dc4db2a43bfb5"
+    },
+    {
+      "page": "request-files",
+      "url": "https://fastapi.tiangolo.com/tutorial/request-files/",
+      "sha256": "06cc414549ea550637d6de3bf1d37b963355506e58b9a0958386e236244d6574"
+    }
+  ]
+}

@@ -1,0 +1,155 @@
+[
+  {
+    "id": "p01",
+    "question": "How can an endpoint insist that a URL query value is provided?",
+    "answerable": true,
+    "gold_pages": [
+      "query-params"
+    ],
+    "expected_terms": [
+      [
+        "default",
+        "required"
+      ]
+    ],
+    "review_status": "draft_unreviewed"
+  },
+  {
+    "id": "p02",
+    "question": "Why keep a secret password out of the response, and what does response_model change?",
+    "answerable": true,
+    "gold_pages": [
+      "response-model"
+    ],
+    "expected_terms": [
+      [
+        "password"
+      ],
+      [
+        "filter",
+        "exclude",
+        "output"
+      ]
+    ],
+    "review_status": "draft_unreviewed"
+  },
+  {
+    "id": "p03",
+    "question": "What happens to a scheduled BackgroundTasks job relative to sending the response?",
+    "answerable": true,
+    "gold_pages": [
+      "background-tasks"
+    ],
+    "expected_terms": [
+      [
+        "after"
+      ],
+      [
+        "response"
+      ]
+    ],
+    "review_status": "draft_unreviewed"
+  },
+  {
+    "id": "p04",
+    "question": "Can a file upload avoid loading its entire contents into RAM?",
+    "answerable": true,
+    "gold_pages": [
+      "request-files"
+    ],
+    "expected_terms": [
+      [
+        "UploadFile"
+      ],
+      [
+        "spool",
+        "disk"
+      ]
+    ],
+    "review_status": "draft_unreviewed"
+  },
+  {
+    "id": "p05",
+    "question": "How would I check that a request returns status 200 in a test?",
+    "answerable": true,
+    "gold_pages": [
+      "testing"
+    ],
+    "expected_terms": [
+      [
+        "status_code"
+      ],
+      [
+        "200"
+      ]
+    ],
+    "review_status": "draft_unreviewed"
+  },
+  {
+    "id": "p06",
+    "question": "Is an origin identical if the hostname stays the same but the port changes?",
+    "answerable": true,
+    "gold_pages": [
+      "cors"
+    ],
+    "expected_terms": [
+      [
+        "port"
+      ],
+      [
+        "different",
+        "no",
+        "not"
+      ]
+    ],
+    "review_status": "draft_unreviewed"
+  },
+  {
+    "id": "p07",
+    "question": "Can CORSMiddleware fetch allowed origins from Redis with a tenant-specific policy?",
+    "answerable": false,
+    "gold_pages": [],
+    "expected_terms": [],
+    "review_status": "draft_unreviewed"
+  },
+  {
+    "id": "p08",
+    "question": "How should I tune a PostgreSQL connection pool for 500 simultaneous API clients?",
+    "answerable": false,
+    "gold_pages": [],
+    "expected_terms": [],
+    "review_status": "draft_unreviewed"
+  },
+  {
+    "id": "p09",
+    "question": "Does UploadFile automatically scan incoming files for malware?",
+    "answerable": false,
+    "gold_pages": [],
+    "expected_terms": [],
+    "review_status": "draft_unreviewed"
+  },
+  {
+    "id": "p10",
+    "question": "How can background tasks retry failed work with exponential backoff?",
+    "answerable": false,
+    "gold_pages": [],
+    "expected_terms": [],
+    "review_status": "draft_unreviewed"
+  },
+  {
+    "id": "p11",
+    "question": "What is FastAPI's default Uvicorn worker count in production?",
+    "answerable": false,
+    "gold_pages": [],
+    "expected_terms": [],
+    "review_status": "draft_unreviewed"
+  },
+  {
+    "id": "p12",
+    "question": "Which temperature should I set for qwen3 when answering FastAPI questions?",
+    "answerable": false,
+    "gold_pages": [],
+    "expected_terms": [],
+    "review_status": "draft_unreviewed"
+  }
+]

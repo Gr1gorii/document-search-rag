@@ -1,0 +1,16 @@
+{
+  "checks": [
+    "Home renders and the installed local model is available",
+    "Example button and search mode return source entries",
+    "Live request shows loading, disables submit and restores it on completion",
+    "Live RAG displays an answer, a canonical citation and inspectable evidence",
+    "390px mobile answer viewport has no horizontal overflow",
+    "Out-of-corpus question displays refusal",
+    "390px mobile viewport has no horizontal overflow",
+    "Simulated service failure is visible and the form can be retried",
+    "A subsequent live search succeeds after the simulated failure"
+  ],
+  "javascript_errors": [],
+  "browser": "Headless system Chrome, fresh temporary profile",
+  "service_failure_check": "Mocked HTTP 503; other requests used the live app"
+}

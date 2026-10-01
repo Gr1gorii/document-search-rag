@@ -1,0 +1,21 @@
+{
+  "reviewer": "Assistant source inspection; no independent human reviewer",
+  "sampling": "Selected examples and failures, not a random sample or complete review",
+  "changes_after_fresh_probe": "No model, prompt, retrieval or threshold changes",
+  "checks": [
+    {"id":"q03","status":"mostly_supported","note":"Order is supported by path-params-007; the final clause about a user ID being provided is imprecise."},
+    {"id":"q10","status":"unsupported_claim","note":"body-009 bases recognition on the Pydantic type. It does not require an item: prefix. The keyword proxy nevertheless passes."},
+    {"id":"q12","status":"mostly_supported","note":"body-009 supports path-name recognition and singular/model types. The answer's precedence phrasing compresses these conditions."},
+    {"id":"q16","status":"incomplete","note":"response-model-016 supports excluding unset defaults. Explicitly set values equal to defaults remain included; the answer's wording does not explain that distinction."},
+    {"id":"q21","status":"supported","note":"handling-errors-003 explicitly says to raise rather than return HTTPException."},
+    {"id":"q26","status":"supported","note":"dependencies-008 explicitly integrates declarations, validations and requirements into OpenAPI."},
+    {"id":"q28","status":"contradicted","note":"The answer says before the response is sent. Cited background-tasks-000 says after returning a response. The keyword proxy passes because after and response appear elsewhere in the answer."},
+    {"id":"q35","status":"false_abstention","note":"cors-001 defines origin using protocol, domain and port, but lexical coverage rejects the question."},
+    {"id":"q36","status":"mostly_supported","note":"cors-003 supports explicit origins for credentials; security motivation is broader than the cited text."},
+    {"id":"q45","status":"supported","note":"request-files-004 describes read(size) and seek(offset)."},
+    {"id":"p02","status":"partly_supported","note":"response-model-004 supports filtering passwords with the output model. The added exclude_unset claim is not supported by this specific cited excerpt."},
+    {"id":"p03","status":"weak_citation","note":"The answer broadly describes non-blocking response behavior, but cited background-tasks-002 describes creating the task function rather than its timing. It omits an explicit after-response answer."},
+    {"id":"p05","status":"wrong_citation","note":"The answer describes TestClient and response.status_code, but handling-errors-004 does not document those testing APIs. Testing is retrieved at rank 3 but not cited."},
+    {"id":"p06","status":"supported","note":"cors-001 directly supports a different origin when the port changes."}
+  ]
+}
