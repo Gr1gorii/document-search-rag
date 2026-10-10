@@ -168,3 +168,14 @@ Optional variables: `DOCLENS_MODEL`, `DOCLENS_OLLAMA_URL`, `DOCLENS_CORPUS`. The
 ## Next steps
 
 First, independently review the labels and whether sources support the answers' claims. Then add a separate set of paraphrases and questions with partially available answers. After that, compare BM25 with embedding retrieval or another local model to identify which failures come from retrieval and which come from generation.
+
+## Project code license
+
+Copyright (c) 2026 Gr1gorii.
+
+The original project code authored by Gr1gorii is licensed under the
+GNU General Public License version 3 only (`GPL-3.0-only`).
+See [LICENSE](LICENSE) for the full terms.
+
+Third-party code, datasets, and materials retain their respective licenses
+and attribution requirements. This license does not replace those terms.
