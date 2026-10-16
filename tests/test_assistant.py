@@ -175,3 +175,22 @@ def test_live_answer_and_unanswerable(index: SearchIndex, settings: Settings) ->
     assert answer.citations
     refusal = assistant.answer("What is the capital of France?")
     assert refusal.status == "abstained"
+
+
+def test_hosted_search_never_calls_model(index: SearchIndex) -> None:
+    settings = Settings(search_only=True)
+    model = FakeOllama()
+    with TestClient(create_app(settings, Assistant(index, settings, model))) as client:
+        assert client.get('/api/info').json()['generation_available'] is False
+        assert client.get('/api/health').json()['ollama'] is False
+        response = client.post('/api/ask', json={'question': 'HTTPException 404', 'mode': 'search'})
+        assert response.status_code == 200
+        assert response.json()['status'] == 'search'
+        assert response.json()['retrieved']
+        assert client.post('/api/ask', json={'question': 'HTTPException 404'}).status_code == 503
+    assert model.calls == 0
+
+
+def test_hosted_mode_from_environment(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv('DOCLENS_SEARCH_ONLY', 'true')
+    assert Settings.from_env().search_only is True

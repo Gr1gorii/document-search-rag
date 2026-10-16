@@ -1,0 +1,1082 @@
+[
+  {
+    "id": "path-params-000",
+    "page": "path-params",
+    "title": "Path Parameters",
+    "section": "Path Parameters",
+    "url": "https://fastapi.tiangolo.com/tutorial/path-params/#path-parameters",
+    "text": "You can declare path \"parameters\" or \"variables\" with the same syntax used by Python format strings:\n\nfrom fastapi import FastAPI\n\napp = FastAPI()\n\n\n@app.get(\"/items/{item_id}\")\nasync def read_item(item_id):\n    return {\"item_id\": item_id}\n\nThe value of the path parameter item_id will be passed to your function as the argument item_id .\n\nSo, if you run this example and go to http://127.0.0.1:8000/items/foo , you will see a response of:\n\n{\"item_id\":\"foo\"}"
+  },
+  {
+    "id": "path-params-001",
+    "page": "path-params",
+    "title": "Path Parameters",
+    "section": "Path parameters with types",
+    "url": "https://fastapi.tiangolo.com/tutorial/path-params/#path-parameters-with-types",
+    "text": "You can declare the type of a path parameter in the function, using standard Python type annotations:\n\nfrom fastapi import FastAPI\n\napp = FastAPI()\n\n\n@app.get(\"/items/{item_id}\")\nasync def read_item(item_id: int):\n    return {\"item_id\": item_id}\n\nIn this case, item_id is declared to be an int .\n\nTip\n\nThis will give you editor support inside of your function, with error checks, completion, etc."
+  },
+  {
+    "id": "path-params-002",
+    "page": "path-params",
+    "title": "Path Parameters",
+    "section": "Data conversion",
+    "url": "https://fastapi.tiangolo.com/tutorial/path-params/#data-conversion",
+    "text": "If you run this example and open your browser at http://127.0.0.1:8000/items/3 , you will see a response of:\n\n{\"item_id\":3}\n\nTip\n\nNotice that the value your function received (and returned) is 3 , as a Python int , not a string \"3\" .\n\nSo, with that type declaration, FastAPI gives you automatic request \"parsing\" ."
+  },
+  {
+    "id": "path-params-003",
+    "page": "path-params",
+    "title": "Path Parameters",
+    "section": "Data validation",
+    "url": "https://fastapi.tiangolo.com/tutorial/path-params/#data-validation",
+    "text": "But if you go to the browser at http://127.0.0.1:8000/items/foo , you will see a nice HTTP error of:\n\n{\n  \"detail\": [\n    {\n      \"type\": \"int_parsing\",\n      \"loc\": [\n        \"path\",\n        \"item_id\"\n      ],\n      \"msg\": \"Input should be a valid integer, unable to parse string as an integer\",\n      \"input\": \"foo\"\n    }\n  ]\n}\n\nbecause the path parameter item_id had a value of \"foo\" , which is not an int .\n\nThe same error would appear if you provided a float instead of an int , as in: http://127.0.0.1:8000/items/4.2\n\nTip\n\nSo, with the same Python type declaration, FastAPI gives you data validation.\n\nNotice that the error also clearly states exactly the point where the validation didn't pass.\n\nThis is incredibly helpful while developing and debugging code that interacts with your API."
+  },
+  {
+    "id": "path-params-004",
+    "page": "path-params",
+    "title": "Path Parameters",
+    "section": "Documentation",
+    "url": "https://fastapi.tiangolo.com/tutorial/path-params/#documentation",
+    "text": "And when you open your browser at http://127.0.0.1:8000/docs , you will see an automatic, interactive, API documentation like:\n\nTip\n\nAgain, just with that same Python type declaration, FastAPI gives you automatic, interactive documentation (integrating Swagger UI).\n\nNotice that the path parameter is declared to be an integer."
+  },
+  {
+    "id": "path-params-005",
+    "page": "path-params",
+    "title": "Path Parameters",
+    "section": "Standards-based benefits, alternative documentation",
+    "url": "https://fastapi.tiangolo.com/tutorial/path-params/#standards-based-benefits-alternative-documentation",
+    "text": "And because the generated schema is from the OpenAPI standard, there are many compatible tools.\n\nBecause of this, FastAPI itself provides an alternative API documentation (using ReDoc), which you can access at http://127.0.0.1:8000/redoc :\n\nThe same way, there are many compatible tools. Including code generation tools for many languages."
+  },
+  {
+    "id": "path-params-006",
+    "page": "path-params",
+    "title": "Path Parameters",
+    "section": "Pydantic",
+    "url": "https://fastapi.tiangolo.com/tutorial/path-params/#pydantic",
+    "text": "All the data validation is performed under the hood by Pydantic , so you get all the benefits from it. And you know you are in good hands.\n\nYou can use the same type declarations with str , float , bool and many other complex data types.\n\nSeveral of these are explored in the next chapters of the tutorial."
+  },
+  {
+    "id": "path-params-007",
+    "page": "path-params",
+    "title": "Path Parameters",
+    "section": "Order matters",
+    "url": "https://fastapi.tiangolo.com/tutorial/path-params/#order-matters",
+    "text": "When creating path operations , you can find situations where you have a fixed path.\n\nLike /users/me , let's say that it's to get data about the current user.\n\nAnd then you can also have a path /users/{user_id} to get data about a specific user by some user ID.\n\nBecause path operations are evaluated in order, you need to make sure that the path for /users/me is declared before the one for /users/{user_id} :\n\nfrom fastapi import FastAPI\n\napp = FastAPI()\n\n\n@app.get(\"/users/me\")\nasync def read_user_me():\n    return {\"user_id\": \"the current user\"}\n\n\n@app.get(\"/users/{user_id}\")\nasync def read_user(user_id: str):\n    return {\"user_id\": user_id}\n\nOtherwise, the path for /users/{user_id} would match also for /users/me , \"thinking\" that it's receiving a parameter user_id with a value of \"me\" .\n\nSimilarly, you cannot redefine a path operation:\n\nfrom fastapi import FastAPI\n\napp = FastAPI()\n\n\n@app.get(\"/users\")\nasync def read_users():\n    return [\"Rick\", \"Morty\"]\n\n\n@app.get(\"/users\")\nasync def read_users2():\n    return [\"Bean\", \"Elfo\"]\n\nThe first one will always be used since the path matches first."
+  },
+  {
+    "id": "path-params-008",
+    "page": "path-params",
+    "title": "Path Parameters",
+    "section": "Predefined values",
+    "url": "https://fastapi.tiangolo.com/tutorial/path-params/#predefined-values",
+    "text": "If you have a path operation that receives a path parameter , but you want the possible valid path parameter values to be predefined, you can use a standard Python Enum ."
+  },
+  {
+    "id": "path-params-009",
+    "page": "path-params",
+    "title": "Path Parameters",
+    "section": "Create an Enum class",
+    "url": "https://fastapi.tiangolo.com/tutorial/path-params/#create-an-enum-class",
+    "text": "Import Enum and create a sub-class that inherits from str and from Enum .\n\nBy inheriting from str the API docs will be able to know that the values must be of type string and will be able to render correctly.\n\nThen create class attributes with fixed values, which will be the available valid values:\n\nfrom enum import Enum\n\nfrom fastapi import FastAPI\n\n\nclass ModelName(str, Enum):\n    alexnet = \"alexnet\"\n    resnet = \"resnet\"\n    lenet = \"lenet\"\n\n\napp = FastAPI()\n\n\n@app.get(\"/models/{model_name}\")\nasync def get_model(model_name: ModelName):\n    if model_name is ModelName.alexnet:\n        return {\"model_name\": model_name, \"message\": \"Deep Learning FTW!\"}\n\n    if model_name.value == \"lenet\":\n        return {\"model_name\": model_name, \"message\": \"LeCNN all the images\"}\n\n    return {\"model_name\": model_name, \"message\": \"Have some residuals\"}\n\nTip\n\nIf you are wondering, \"AlexNet\", \"ResNet\", and \"LeNet\" are just names of Machine Learning models ."
+  },
+  {
+    "id": "path-params-010",
+    "page": "path-params",
+    "title": "Path Parameters",
+    "section": "Declare a path parameter",
+    "url": "https://fastapi.tiangolo.com/tutorial/path-params/#declare-a-path-parameter",
+    "text": "Then create a path parameter with a type annotation using the enum class you created ( ModelName ):\n\nfrom enum import Enum\n\nfrom fastapi import FastAPI\n\n\nclass ModelName(str, Enum):\n    alexnet = \"alexnet\"\n    resnet = \"resnet\"\n    lenet = \"lenet\"\n\n\napp = FastAPI()\n\n\n@app.get(\"/models/{model_name}\")\nasync def get_model(model_name: ModelName):\n    if model_name is ModelName.alexnet:\n        return {\"model_name\": model_name, \"message\": \"Deep Learning FTW!\"}\n\n    if model_name.value == \"lenet\":\n        return {\"model_name\": model_name, \"message\": \"LeCNN all the images\"}\n\n    return {\"model_name\": model_name, \"message\": \"Have some residuals\"}"
+  },
+  {
+    "id": "path-params-011",
+    "page": "path-params",
+    "title": "Path Parameters",
+    "section": "Check the docs",
+    "url": "https://fastapi.tiangolo.com/tutorial/path-params/#check-the-docs",
+    "text": "Because the available values for the path parameter are predefined, the interactive docs can show them nicely:"
+  },
+  {
+    "id": "path-params-012",
+    "page": "path-params",
+    "title": "Path Parameters",
+    "section": "Working with Python enumerations",
+    "url": "https://fastapi.tiangolo.com/tutorial/path-params/#working-with-python-enumerations",
+    "text": "The value of the path parameter will be an enumeration member ."
+  },
+  {
+    "id": "path-params-013",
+    "page": "path-params",
+    "title": "Path Parameters",
+    "section": "Compare enumeration members",
+    "url": "https://fastapi.tiangolo.com/tutorial/path-params/#compare-enumeration-members",
+    "text": "You can compare it with the enumeration member in your created enum ModelName :\n\nfrom enum import Enum\n\nfrom fastapi import FastAPI\n\n\nclass ModelName(str, Enum):\n    alexnet = \"alexnet\"\n    resnet = \"resnet\"\n    lenet = \"lenet\"\n\n\napp = FastAPI()\n\n\n@app.get(\"/models/{model_name}\")\nasync def get_model(model_name: ModelName):\n    if model_name is ModelName.alexnet:\n        return {\"model_name\": model_name, \"message\": \"Deep Learning FTW!\"}\n\n    if model_name.value == \"lenet\":\n        return {\"model_name\": model_name, \"message\": \"LeCNN all the images\"}\n\n    return {\"model_name\": model_name, \"message\": \"Have some residuals\"}"
+  },
+  {
+    "id": "path-params-014",
+    "page": "path-params",
+    "title": "Path Parameters",
+    "section": "Get the enumeration value",
+    "url": "https://fastapi.tiangolo.com/tutorial/path-params/#get-the-enumeration-value",
+    "text": "You can get the actual value (a str in this case) using model_name.value , or in general, your_enum_member.value :\n\nfrom enum import Enum\n\nfrom fastapi import FastAPI\n\n\nclass ModelName(str, Enum):\n    alexnet = \"alexnet\"\n    resnet = \"resnet\"\n    lenet = \"lenet\"\n\n\napp = FastAPI()\n\n\n@app.get(\"/models/{model_name}\")\nasync def get_model(model_name: ModelName):\n    if model_name is ModelName.alexnet:\n        return {\"model_name\": model_name, \"message\": \"Deep Learning FTW!\"}\n\n    if model_name.value == \"lenet\":\n        return {\"model_name\": model_name, \"message\": \"LeCNN all the images\"}\n\n    return {\"model_name\": model_name, \"message\": \"Have some residuals\"}\n\nTip\n\nYou could also access the value \"lenet\" with ModelName.lenet.value ."
+  },
+  {
+    "id": "path-params-015",
+    "page": "path-params",
+    "title": "Path Parameters",
+    "section": "Return enumeration members",
+    "url": "https://fastapi.tiangolo.com/tutorial/path-params/#return-enumeration-members",
+    "text": "You can return enum members from your path operation , even nested in a JSON body (e.g. a dict ).\n\nThey will be converted to their corresponding values (strings in this case) before returning them to the client:\n\nfrom enum import Enum\n\nfrom fastapi import FastAPI\n\n\nclass ModelName(str, Enum):\n    alexnet = \"alexnet\"\n    resnet = \"resnet\"\n    lenet = \"lenet\"\n\n\napp = FastAPI()\n\n\n@app.get(\"/models/{model_name}\")\nasync def get_model(model_name: ModelName):\n    if model_name is ModelName.alexnet:\n        return {\"model_name\": model_name, \"message\": \"Deep Learning FTW!\"}\n\n    if model_name.value == \"lenet\":\n        return {\"model_name\": model_name, \"message\": \"LeCNN all the images\"}\n\n    return {\"model_name\": model_name, \"message\": \"Have some residuals\"}\n\nIn your client you will get a JSON response like:\n\n{\n  \"model_name\": \"alexnet\",\n  \"message\": \"Deep Learning FTW!\"\n}"
+  },
+  {
+    "id": "path-params-016",
+    "page": "path-params",
+    "title": "Path Parameters",
+    "section": "Path parameters containing paths",
+    "url": "https://fastapi.tiangolo.com/tutorial/path-params/#path-parameters-containing-paths",
+    "text": "Let's say you have a path operation with a path /files/{file_path} .\n\nBut you need file_path itself to contain a path , like home/johndoe/myfile.txt .\n\nSo, the URL for that file would be something like: /files/home/johndoe/myfile.txt ."
+  },
+  {
+    "id": "path-params-017",
+    "page": "path-params",
+    "title": "Path Parameters",
+    "section": "OpenAPI support",
+    "url": "https://fastapi.tiangolo.com/tutorial/path-params/#openapi-support",
+    "text": "OpenAPI doesn't support a way to declare a path parameter to contain a path inside, as that could lead to scenarios that are difficult to test and define.\n\nNevertheless, you can still do it in FastAPI , using one of the internal tools from Starlette.\n\nAnd the docs would still work, although not adding any documentation telling that the parameter should contain a path."
+  },
+  {
+    "id": "path-params-018",
+    "page": "path-params",
+    "title": "Path Parameters",
+    "section": "Path convertor",
+    "url": "https://fastapi.tiangolo.com/tutorial/path-params/#path-convertor",
+    "text": "Using an option directly from Starlette you can declare a path parameter containing a path using a URL like:\n\n/files/{file_path:path}\n\nIn this case, the name of the parameter is file_path , and the last part, :path , tells it that the parameter should match any path .\n\nSo, you can use it with:\n\nfrom fastapi import FastAPI\n\napp = FastAPI()\n\n\n@app.get(\"/files/{file_path:path}\")\nasync def read_file(file_path: str):\n    return {\"file_path\": file_path}\n\nTip\n\nYou might need the parameter to contain /home/johndoe/myfile.txt , with a leading slash ( / ).\n\nIn that case, the URL would be: /files//home/johndoe/myfile.txt , with a double slash ( // ) between files and home ."
+  },
+  {
+    "id": "path-params-019",
+    "page": "path-params",
+    "title": "Path Parameters",
+    "section": "Recap",
+    "url": "https://fastapi.tiangolo.com/tutorial/path-params/#recap",
+    "text": "With FastAPI , by using short, intuitive and standard Python type declarations, you get:\n\nEditor support: error checks, autocompletion, etc.\n\nData \" parsing \"\n\nData validation\n\nAPI annotation and automatic documentation\n\nAnd you only have to declare them once.\n\nThat's probably the main visible advantage of FastAPI compared to alternative frameworks (apart from the raw performance)."
+  },
+  {
+    "id": "query-params-000",
+    "page": "query-params",
+    "title": "Query Parameters",
+    "section": "Query Parameters",
+    "url": "https://fastapi.tiangolo.com/tutorial/query-params/#query-parameters",
+    "text": "When you declare other function parameters that are not part of the path parameters, they are automatically interpreted as \"query\" parameters.\n\nfrom fastapi import FastAPI\n\napp = FastAPI()\n\nfake_items_db = [{\"item_name\": \"Foo\"}, {\"item_name\": \"Bar\"}, {\"item_name\": \"Baz\"}]\n\n\n@app.get(\"/items/\")\nasync def read_item(skip: int = 0, limit: int = 10):\n    return fake_items_db[skip : skip + limit]\n\nThe query is the set of key-value pairs that go after the ? in a URL, separated by & characters.\n\nFor example, in the URL:\n\nhttp://127.0.0.1:8000/items/?skip=0&limit=10\n\n...the query parameters are:\n\nskip : with a value of 0\n\nlimit : with a value of 10\n\nAs they are part of the URL, they are \"naturally\" strings.\n\nBut when you declare them with Python types (in the example above, as int ), they are converted to that type and validated against it.\n\nAll the same processes that apply to path parameters also apply to query parameters:\n\nEditor support (obviously)\n\nData \"parsing\"\n\nData validation\n\nAutomatic documentation"
+  },
+  {
+    "id": "query-params-001",
+    "page": "query-params",
+    "title": "Query Parameters",
+    "section": "Defaults",
+    "url": "https://fastapi.tiangolo.com/tutorial/query-params/#defaults",
+    "text": "As query parameters are not a fixed part of a path, they can be optional and can have default values.\n\nIn the example above they have default values of skip=0 and limit=10 .\n\nSo, going to the URL:\n\nhttp://127.0.0.1:8000/items/\n\nwould be the same as going to:\n\nhttp://127.0.0.1:8000/items/?skip=0&limit=10\n\nBut if you go to, for example:\n\nhttp://127.0.0.1:8000/items/?skip=20\n\nThe parameter values in your function will be:\n\nskip=20 : because you set it in the URL\n\nlimit=10 : because that was the default value"
+  },
+  {
+    "id": "query-params-002",
+    "page": "query-params",
+    "title": "Query Parameters",
+    "section": "Optional parameters",
+    "url": "https://fastapi.tiangolo.com/tutorial/query-params/#optional-parameters",
+    "text": "The same way, you can declare optional query parameters, by setting their default to None :\n\nfrom fastapi import FastAPI\n\napp = FastAPI()\n\n\n@app.get(\"/items/{item_id}\")\nasync def read_item(item_id: str, q: str | None = None):\n    if q:\n        return {\"item_id\": item_id, \"q\": q}\n    return {\"item_id\": item_id}\n\nIn this case, the function parameter q will be optional, and will be None by default.\n\nTip\n\nAlso notice that FastAPI is smart enough to notice that the path parameter item_id is a path parameter and q is not, so, it's a query parameter."
+  },
+  {
+    "id": "query-params-003",
+    "page": "query-params",
+    "title": "Query Parameters",
+    "section": "Query parameter type conversion",
+    "url": "https://fastapi.tiangolo.com/tutorial/query-params/#query-parameter-type-conversion",
+    "text": "You can also declare bool types, and they will be converted:\n\nfrom fastapi import FastAPI\n\napp = FastAPI()\n\n\n@app.get(\"/items/{item_id}\")\nasync def read_item(item_id: str, q: str | None = None, short: bool = False):\n    item = {\"item_id\": item_id}\n    if q:\n        item.update({\"q\": q})\n    if not short:\n        item.update(\n            {\"description\": \"This is an amazing item that has a long description\"}\n        )\n    return item\n\nIn this case, if you go to:\n\nhttp://127.0.0.1:8000/items/foo?short=1\n\nor\n\nhttp://127.0.0.1:8000/items/foo?short=True\n\nor\n\nhttp://127.0.0.1:8000/items/foo?short=true\n\nor\n\nhttp://127.0.0.1:8000/items/foo?short=on\n\nor\n\nhttp://127.0.0.1:8000/items/foo?short=yes\n\nor any other case variation (uppercase, first letter in uppercase, etc), your function will see the parameter short with a bool value of True . Otherwise as False ."
+  },
+  {
+    "id": "query-params-004",
+    "page": "query-params",
+    "title": "Query Parameters",
+    "section": "Multiple path and query parameters",
+    "url": "https://fastapi.tiangolo.com/tutorial/query-params/#multiple-path-and-query-parameters",
+    "text": "You can declare multiple path parameters and query parameters at the same time, FastAPI knows which is which.\n\nAnd you don't have to declare them in any specific order.\n\nThey will be detected by name:\n\nfrom fastapi import FastAPI\n\napp = FastAPI()\n\n\n@app.get(\"/users/{user_id}/items/{item_id}\")\nasync def read_user_item(\n    user_id: int, item_id: str, q: str | None = None, short: bool = False\n):\n    item = {\"item_id\": item_id, \"owner_id\": user_id}\n    if q:\n        item.update({\"q\": q})\n    if not short:\n        item.update(\n            {\"description\": \"This is an amazing item that has a long description\"}\n        )\n    return item"
+  },
+  {
+    "id": "query-params-005",
+    "page": "query-params",
+    "title": "Query Parameters",
+    "section": "Required query parameters",
+    "url": "https://fastapi.tiangolo.com/tutorial/query-params/#required-query-parameters",
+    "text": "When you declare a default value for non-path parameters (for now, we have only seen query parameters), then it is not required.\n\nIf you don't want to add a specific value but just make it optional, set the default as None .\n\nBut when you want to make a query parameter required, you can just not declare any default value:\n\nfrom fastapi import FastAPI\n\napp = FastAPI()\n\n\n@app.get(\"/items/{item_id}\")\nasync def read_user_item(item_id: str, needy: str):\n    item = {\"item_id\": item_id, \"needy\": needy}\n    return item\n\nHere the query parameter needy is a required query parameter of type str .\n\nIf you open in your browser a URL like:\n\nhttp://127.0.0.1:8000/items/foo-item\n\n...without adding the required parameter needy , you will see an error like:\n\n{\n  \"detail\": [\n    {\n      \"type\": \"missing\",\n      \"loc\": [\n        \"query\",\n        \"needy\"\n      ],\n      \"msg\": \"Field required\",\n      \"input\": null\n    }\n  ]\n}\n\nAs needy is a required parameter, you would need to set it in the URL:\n\nhttp://127.0.0.1:8000/items/foo-item?needy=sooooneedy\n\n...this would work:\n\n{\n    \"item_id\": \"foo-item\",\n    \"needy\": \"sooooneedy\"\n}\n\nAnd of course, you can define some parameters as required, some as having a default value, and some entirely optional:\n\nfrom fastapi import FastAPI\n\napp = FastAPI()\n\n\n@app.get(\"/items/{item_id}\")\nasync def read_user_item(\n    item_id: str, needy: str, skip: int = 0, limit: int | None = None\n):\n    item = {\"item_id\": item_id, \"needy\": needy, \"skip\": skip, \"limit\": limit}\n    return item\n\nIn this case, there are 3 query parameters:\n\nneedy , a required str .\n\nskip , an int with a default value of 0 .\n\nlimit , an optional int .\n\nTip\n\nYou could also use Enum s the same way as with Path Parameters ."
+  },
+  {
+    "id": "body-000",
+    "page": "body",
+    "title": "Request Body",
+    "section": "Request Body",
+    "url": "https://fastapi.tiangolo.com/tutorial/body/#request-body",
+    "text": "When you need to send data from a client (let's say, a browser) to your API, you send it as a request body .\n\nA request body is data sent by the client to your API. A response body is the data your API sends to the client.\n\nYour API almost always has to send a response body. But clients don't necessarily need to send request bodies all the time, sometimes they only request a path, maybe with some query parameters, but don't send a body.\n\nTo declare a request body, you use Pydantic models with all their power and benefits.\n\nNote\n\nTo send data, you should use one of: POST (the most common), PUT , DELETE or PATCH .\n\nSending a body with a GET request has an undefined behavior in the specifications, nevertheless, it is supported by FastAPI, only for very complex/extreme use cases.\n\nAs it is discouraged, the interactive docs with Swagger UI won't show the documentation for the body when using GET , and proxies in the middle might not support it."
+  },
+  {
+    "id": "body-001",
+    "page": "body",
+    "title": "Request Body",
+    "section": "Import Pydantic's BaseModel",
+    "url": "https://fastapi.tiangolo.com/tutorial/body/#import-pydantics-basemodel",
+    "text": "First, you need to import BaseModel from pydantic :\n\nfrom fastapi import FastAPI\nfrom pydantic import BaseModel\n\n\nclass Item(BaseModel):\n    name: str\n    description: str | None = None\n    price: float\n    tax: float | None = None\n\n\napp = FastAPI()\n\n\n@app.post(\"/items/\")\nasync def create_item(item: Item):\n    return item"
+  },
+  {
+    "id": "body-002",
+    "page": "body",
+    "title": "Request Body",
+    "section": "Create your data model",
+    "url": "https://fastapi.tiangolo.com/tutorial/body/#create-your-data-model",
+    "text": "Then you declare your data model as a class that inherits from BaseModel .\n\nUse standard Python types for all the attributes:\n\nfrom fastapi import FastAPI\nfrom pydantic import BaseModel\n\n\nclass Item(BaseModel):\n    name: str\n    description: str | None = None\n    price: float\n    tax: float | None = None\n\n\napp = FastAPI()\n\n\n@app.post(\"/items/\")\nasync def create_item(item: Item):\n    return item\n\nThe same as when declaring query parameters, when a model attribute has a default value, it is not required. Otherwise, it is required. Use None to make it just optional.\n\nFor example, this model above declares a JSON \" object \" (or Python dict ) like:\n\n{\n    \"name\": \"Foo\",\n    \"description\": \"An optional description\",\n    \"price\": 45.2,\n    \"tax\": 3.5\n}\n\n...as description and tax are optional (with a default value of None ), this JSON \" object \" would also be valid:\n\n{\n    \"name\": \"Foo\",\n    \"price\": 45.2\n}"
+  },
+  {
+    "id": "body-003",
+    "page": "body",
+    "title": "Request Body",
+    "section": "Declare it as a parameter",
+    "url": "https://fastapi.tiangolo.com/tutorial/body/#declare-it-as-a-parameter",
+    "text": "To add it to your path operation , declare it the same way you declared path and query parameters:\n\nfrom fastapi import FastAPI\nfrom pydantic import BaseModel\n\n\nclass Item(BaseModel):\n    name: str\n    description: str | None = None\n    price: float\n    tax: float | None = None\n\n\napp = FastAPI()\n\n\n@app.post(\"/items/\")\nasync def create_item(item: Item):\n    return item\n\n...and declare its type as the model you created, Item ."
+  },
+  {
+    "id": "body-004",
+    "page": "body",
+    "title": "Request Body",
+    "section": "Results",
+    "url": "https://fastapi.tiangolo.com/tutorial/body/#results",
+    "text": "With just that Python type declaration, FastAPI will:\n\nRead the body of the request as JSON.\n\nConvert the corresponding types (if needed).\n\nValidate the data. If the data is invalid, it will return a nice and clear error, indicating exactly where and what was the incorrect data.\n\nGive you the received data in the parameter item . As you declared it in the function to be of type Item , you will also have all the editor support (completion, etc) for all of the attributes and their types.\n\nGenerate JSON Schema definitions for your model, you can also use them anywhere else you like if it makes sense for your project.\n\nThose schemas will be part of the generated OpenAPI schema, and used by the automatic documentation UIs ."
+  },
+  {
+    "id": "body-005",
+    "page": "body",
+    "title": "Request Body",
+    "section": "Automatic docs",
+    "url": "https://fastapi.tiangolo.com/tutorial/body/#automatic-docs",
+    "text": "The JSON Schemas of your models will be part of your OpenAPI generated schema, and will be shown in the interactive API docs:\n\nAnd will also be used in the API docs inside each path operation that needs them:"
+  },
+  {
+    "id": "body-006",
+    "page": "body",
+    "title": "Request Body",
+    "section": "Editor support",
+    "url": "https://fastapi.tiangolo.com/tutorial/body/#editor-support",
+    "text": "In your editor, inside your function you will get type hints and completion everywhere (this wouldn't happen if you received a dict instead of a Pydantic model):\n\nYou also get error checks for incorrect type operations:\n\nThis is not by chance, the whole framework was built around that design.\n\nAnd it was thoroughly tested at the design phase, before any implementation, to ensure it would work with all the editors.\n\nThere were even some changes to Pydantic itself to support this.\n\nThe previous screenshots were taken with Visual Studio Code .\n\nBut you would get the same editor support with PyCharm and most of the other Python editors:\n\nTip\n\nIf you use PyCharm as your editor, you can use the Pydantic PyCharm Plugin .\n\nIt improves editor support for Pydantic models, with:\n\nauto-completion\n\ntype checks\n\nrefactoring\n\nsearching\n\ninspections"
+  },
+  {
+    "id": "body-007",
+    "page": "body",
+    "title": "Request Body",
+    "section": "Use the model",
+    "url": "https://fastapi.tiangolo.com/tutorial/body/#use-the-model",
+    "text": "Inside of the function, you can access all the attributes of the model object directly:\n\nfrom fastapi import FastAPI\nfrom pydantic import BaseModel\n\n\nclass Item(BaseModel):\n    name: str\n    description: str | None = None\n    price: float\n    tax: float | None = None\n\n\napp = FastAPI()\n\n\n@app.post(\"/items/\")\nasync def create_item(item: Item):\n    item_dict = item.model_dump()\n    if item.tax is not None:\n        price_with_tax = item.price + item.tax\n        item_dict.update({\"price_with_tax\": price_with_tax})\n    return item_dict"
+  },
+  {
+    "id": "body-008",
+    "page": "body",
+    "title": "Request Body",
+    "section": "Request body + path parameters",
+    "url": "https://fastapi.tiangolo.com/tutorial/body/#request-body-path-parameters",
+    "text": "You can declare path parameters and request body at the same time.\n\nFastAPI will recognize that the function parameters that match path parameters should be taken from the path , and that function parameters that are declared to be Pydantic models should be taken from the request body .\n\nfrom fastapi import FastAPI\nfrom pydantic import BaseModel\n\n\nclass Item(BaseModel):\n    name: str\n    description: str | None = None\n    price: float\n    tax: float | None = None\n\n\napp = FastAPI()\n\n\n@app.put(\"/items/{item_id}\")\nasync def update_item(item_id: int, item: Item):\n    return {\"item_id\": item_id, **item.model_dump()}"
+  },
+  {
+    "id": "body-009",
+    "page": "body",
+    "title": "Request Body",
+    "section": "Request body + path + query parameters",
+    "url": "https://fastapi.tiangolo.com/tutorial/body/#request-body-path-query-parameters",
+    "text": "You can also declare body , path and query parameters, all at the same time.\n\nFastAPI will recognize each of them and take the data from the correct place.\n\nfrom fastapi import FastAPI\nfrom pydantic import BaseModel\n\n\nclass Item(BaseModel):\n    name: str\n    description: str | None = None\n    price: float\n    tax: float | None = None\n\n\napp = FastAPI()\n\n\n@app.put(\"/items/{item_id}\")\nasync def update_item(item_id: int, item: Item, q: str | None = None):\n    result = {\"item_id\": item_id, **item.model_dump()}\n    if q:\n        result.update({\"q\": q})\n    return result\n\nThe function parameters will be recognized as follows:\n\nIf the parameter is also declared in the path , it will be used as a path parameter.\n\nIf the parameter is of a singular type (like int , float , str , bool , etc) it will be interpreted as a query parameter.\n\nIf the parameter is declared to be of the type of a Pydantic model , it will be interpreted as a request body .\n\nNote\n\nFastAPI will know that the value of q is not required because of the default value = None .\n\nThe str | None is not used by FastAPI to determine that the value is not required, it will know it's not required because it has a default value of = None .\n\nBut adding the type annotations will allow your editor to give you better support and detect errors."
+  },
+  {
+    "id": "body-010",
+    "page": "body",
+    "title": "Request Body",
+    "section": "Without Pydantic",
+    "url": "https://fastapi.tiangolo.com/tutorial/body/#without-pydantic",
+    "text": "If you don't want to use Pydantic models, you can also use Body parameters. See the docs for Body - Multiple Parameters: Singular values in body ."
+  },
+  {
+    "id": "response-model-000",
+    "page": "response-model",
+    "title": "Response Model - Return Type",
+    "section": "Response Model - Return Type",
+    "url": "https://fastapi.tiangolo.com/tutorial/response-model/#response-model-return-type",
+    "text": "You can declare the type used for the response by annotating the path operation function return type .\n\nYou can use type annotations the same way you would for input data in function parameters , you can use Pydantic models, lists, dictionaries, scalar values like integers, booleans, etc.\n\nfrom fastapi import FastAPI\nfrom pydantic import BaseModel\n\napp = FastAPI()\n\n\nclass Item(BaseModel):\n    name: str\n    description: str | None = None\n    price: float\n    tax: float | None = None\n    tags: list[str] = []\n\n\n@app.post(\"/items/\")\nasync def create_item(item: Item) -> Item:\n    return item\n\n\n@app.get(\"/items/\")\nasync def read_items() -> list[Item]:\n    return [\n        Item(name=\"Portal Gun\", price=42.0),\n        Item(name=\"Plumbus\", price=32.0),\n    ]\n\nFastAPI will use this return type to:\n\nValidate the returned data. If the data is invalid (e.g. you are missing a field), it means that your app code is broken, not returning what it should, and it will return a server error instead of returning incorrect data. This way you and your clients can be certain that they will receive the data and the data shape expected.\n\nAdd a JSON Schema for the response, in the OpenAPI path operation . This will be used by the automatic docs . It will also be used by automatic client code generation tools.\n\nSerialize the returned data to JSON using Pydantic, which is written in Rust , so it will be much faster .\n\nBut most importantly:\n\nIt will limit and filter the output data to what is defined in the return type. This is particularly important for security , we'll see more of that below."
+  },
+  {
+    "id": "response-model-001",
+    "page": "response-model",
+    "title": "Response Model - Return Type",
+    "section": "response_model Parameter",
+    "url": "https://fastapi.tiangolo.com/tutorial/response-model/#response-model-parameter",
+    "text": "There are some cases where you need or want to return some data that is not exactly what the type declares.\n\nFor example, you could want to return a dictionary or a database object, but declare it as a Pydantic model . This way the Pydantic model would do all the data documentation, validation, etc. for the object that you returned (e.g. a dictionary or database object).\n\nIf you added the return type annotation, tools and editors would complain with a (correct) error telling you that your function is returning a type (e.g. a dict) that is different from what you declared (e.g. a Pydantic model).\n\nIn those cases, you can use the path operation decorator parameter response_model instead of the return type.\n\nYou can use the response_model parameter in any of the path operations :\n\n@app.get()\n\n@app.post()\n\n@app.put()\n\n@app.delete()\n\netc.\n\nfrom typing import Any\n\nfrom fastapi import FastAPI\nfrom pydantic import BaseModel\n\napp = FastAPI()\n\n\nclass Item(BaseModel):\n    name: str\n    description: str | None = None\n    price: float\n    tax: float | None = None\n    tags: list[str] = []\n\n\n@app.post(\"/items/\", response_model=Item)\nasync def create_item(item: Item) -> Any:\n    return item\n\n\n@app.get(\"/items/\", response_model=list[Item])\nasync def read_items() -> Any:\n    return [\n        {\"name\": \"Portal Gun\", \"price\": 42.0},\n        {\"name\": \"Plumbus\", \"price\": 32.0},\n    ]\n\nNote\n\nNotice that response_model is a parameter of the \"decorator\" method ( get , post , etc). Not of your path operation function , like all the parameters and body.\n\nresponse_model receives the same type you would declare for a Pydantic model field, so, it can be a Pydantic model, but it can also be, e.g. a list of Pydantic models, like List[Item] .\n\nFastAPI will use this response_model to do all the data documentation, validation, etc. and also to convert and filter the output data to its type declaration.\n\nTip\n\nIf you have strict type checks in your editor, mypy, etc, you can declare the function return type as Any .\n\nThat way you tell the editor that you are intentionally returning anything. But FastAPI will still do the data documentation, validation, filtering, etc. with the response_model ."
+  },
+  {
+    "id": "response-model-002",
+    "page": "response-model",
+    "title": "Response Model - Return Type",
+    "section": "response_model Priority",
+    "url": "https://fastapi.tiangolo.com/tutorial/response-model/#response-model-priority",
+    "text": "If you declare both a return type and a response_model , the response_model will take priority and be used by FastAPI.\n\nThis way you can add correct type annotations to your functions even when you are returning a type different than the response model, to be used by the editor and tools like mypy. And still you can have FastAPI do the data validation, documentation, etc. using the response_model .\n\nYou can also use response_model=None to disable creating a response model for that path operation , you might need to do it if you are adding type annotations for things that are not valid Pydantic fields, you will see an example of that in one of the sections below."
+  },
+  {
+    "id": "response-model-003",
+    "page": "response-model",
+    "title": "Response Model - Return Type",
+    "section": "Return the same input data",
+    "url": "https://fastapi.tiangolo.com/tutorial/response-model/#return-the-same-input-data",
+    "text": "Here we are declaring a UserIn model, it will contain a plaintext password:\n\nfrom fastapi import FastAPI\nfrom pydantic import BaseModel, EmailStr\n\napp = FastAPI()\n\n\nclass UserIn(BaseModel):\n    username: str\n    password: str\n    email: EmailStr\n    full_name: str | None = None\n\n\n# Don't do this in production!\n@app.post(\"/user/\")\nasync def create_user(user: UserIn) -> UserIn:\n    return user\n\nNote\n\nTo use EmailStr , first install email-validator .\n\nAdd it to your project:\n\n$ uv add email-validator\n\nor with:\n\n$ uv add \"pydantic[email]\"\n\nAnd we are using this model to declare our input and the same model to declare our output:\n\nfrom fastapi import FastAPI\nfrom pydantic import BaseModel, EmailStr\n\napp = FastAPI()\n\n\nclass UserIn(BaseModel):\n    username: str\n    password: str\n    email: EmailStr\n    full_name: str | None = None\n\n\n# Don't do this in production!\n@app.post(\"/user/\")\nasync def create_user(user: UserIn) -> UserIn:\n    return user\n\nNow, whenever a browser is creating a user with a password, the API will return the same password in the response.\n\nIn this case, it might not be a problem, because it's the same user sending the password.\n\nBut if we use the same model for another path operation , we could be sending our user's passwords to every client.\n\nDanger\n\nNever store the plain password of a user or send it in a response like this, unless you know all the caveats and you know what you are doing."
+  },
+  {
+    "id": "response-model-004",
+    "page": "response-model",
+    "title": "Response Model - Return Type",
+    "section": "Add an output model",
+    "url": "https://fastapi.tiangolo.com/tutorial/response-model/#add-an-output-model",
+    "text": "We can instead create an input model with the plaintext password and an output model without it:\n\nfrom typing import Any\n\nfrom fastapi import FastAPI\nfrom pydantic import BaseModel, EmailStr\n\napp = FastAPI()\n\n\nclass UserIn(BaseModel):\n    username: str\n    password: str\n    email: EmailStr\n    full_name: str | None = None\n\n\nclass UserOut(BaseModel):\n    username: str\n    email: EmailStr\n    full_name: str | None = None\n\n\n@app.post(\"/user/\", response_model=UserOut)\nasync def create_user(user: UserIn) -> Any:\n    return user\n\nHere, even though our path operation function is returning the same input user that contains the password:\n\nfrom typing import Any\n\nfrom fastapi import FastAPI\nfrom pydantic import BaseModel, EmailStr\n\napp = FastAPI()\n\n\nclass UserIn(BaseModel):\n    username: str\n    password: str\n    email: EmailStr\n    full_name: str | None = None\n\n\nclass UserOut(BaseModel):\n    username: str\n    email: EmailStr\n    full_name: str | None = None\n\n\n@app.post(\"/user/\", response_model=UserOut)\nasync def create_user(user: UserIn) -> Any:\n    return user\n\n...we declared the response_model to be our model UserOut , that doesn't include the password:\n\nfrom typing import Any\n\nfrom fastapi import FastAPI\nfrom pydantic import BaseModel, EmailStr\n\napp = FastAPI()\n\n\nclass UserIn(BaseModel):\n    username: str\n    password: str\n    email: EmailStr\n    full_name: str | None = None\n\n\nclass UserOut(BaseModel):\n    username: str\n    email: EmailStr\n    full_name: str | None = None\n\n\n@app.post(\"/user/\", response_model=UserOut)\nasync def create_user(user: UserIn) -> Any:\n    return user\n\nSo, FastAPI will take care of filtering out all the data that is not declared in the output model (using Pydantic)."
+  },
+  {
+    "id": "response-model-005",
+    "page": "response-model",
+    "title": "Response Model - Return Type",
+    "section": "response_model or Return Type",
+    "url": "https://fastapi.tiangolo.com/tutorial/response-model/#response-model-or-return-type",
+    "text": "In this case, because the two models are different, if we annotated the function return type as UserOut , the editor and tools would complain that we are returning an invalid type, as those are different classes.\n\nThat's why in this example we have to declare it in the response_model parameter.\n\n...but continue reading below to see how to overcome that."
+  },
+  {
+    "id": "response-model-006",
+    "page": "response-model",
+    "title": "Response Model - Return Type",
+    "section": "Return Type and Data Filtering",
+    "url": "https://fastapi.tiangolo.com/tutorial/response-model/#return-type-and-data-filtering",
+    "text": "Let's continue from the previous example. We wanted to annotate the function with one type , but we wanted to be able to return from the function something that actually includes more data .\n\nWe want FastAPI to keep filtering the data using the response model. So that even though the function returns more data, the response will only include the fields declared in the response model.\n\nIn the previous example, because the classes were different, we had to use the response_model parameter. But that also means that we don't get the support from the editor and tools checking the function return type.\n\nBut in most of the cases where we need to do something like this, we want the model just to filter/remove some of the data as in this example.\n\nAnd in those cases, we can use classes and inheritance to take advantage of function type annotations to get better support in the editor and tools, and still get the FastAPI data filtering .\n\nfrom fastapi import FastAPI\nfrom pydantic import BaseModel, EmailStr\n\napp = FastAPI()\n\n\nclass BaseUser(BaseModel):\n    username: str\n    email: EmailStr\n    full_name: str | None = None\n\n\nclass UserIn(BaseUser):\n    password: str\n\n\n@app.post(\"/user/\")\nasync def create_user(user: UserIn) -> BaseUser:\n    return user\n\nWith this, we get tooling support, from editors and mypy as this code is correct in terms of types, but we also get the data filtering from FastAPI.\n\nHow does this work? Let's check that out. 🤓"
+  },
+  {
+    "id": "response-model-007",
+    "page": "response-model",
+    "title": "Response Model - Return Type",
+    "section": "Type Annotations and Tooling",
+    "url": "https://fastapi.tiangolo.com/tutorial/response-model/#type-annotations-and-tooling",
+    "text": "First let's see how editors, mypy and other tools would see this.\n\nBaseUser has the base fields. Then UserIn inherits from BaseUser and adds the password field, so, it will include all the fields from both models.\n\nWe annotate the function return type as BaseUser , but we are actually returning a UserIn instance.\n\nThe editor, mypy, and other tools won't complain about this because, in typing terms, UserIn is a subclass of BaseUser , which means it's a valid type when what is expected is anything that is a BaseUser ."
+  },
+  {
+    "id": "response-model-008",
+    "page": "response-model",
+    "title": "Response Model - Return Type",
+    "section": "FastAPI Data Filtering",
+    "url": "https://fastapi.tiangolo.com/tutorial/response-model/#fastapi-data-filtering",
+    "text": "Now, for FastAPI, it will see the return type and make sure that what you return includes only the fields that are declared in the type.\n\nFastAPI does several things internally with Pydantic to make sure that those same rules of class inheritance are not used for the returned data filtering, otherwise you could end up returning much more data than what you expected.\n\nThis way, you can get the best of both worlds: type annotations with tooling support and data filtering ."
+  },
+  {
+    "id": "response-model-009",
+    "page": "response-model",
+    "title": "Response Model - Return Type",
+    "section": "See it in the docs",
+    "url": "https://fastapi.tiangolo.com/tutorial/response-model/#see-it-in-the-docs",
+    "text": "When you see the automatic docs, you can check that the input model and output model will both have their own JSON Schema:\n\nAnd both models will be used for the interactive API documentation:"
+  },
+  {
+    "id": "response-model-010",
+    "page": "response-model",
+    "title": "Response Model - Return Type",
+    "section": "Other Return Type Annotations",
+    "url": "https://fastapi.tiangolo.com/tutorial/response-model/#other-return-type-annotations",
+    "text": "There might be cases where you return something that is not a valid Pydantic field and you annotate it in the function, only to get the support provided by tooling (the editor, mypy, etc)."
+  },
+  {
+    "id": "response-model-011",
+    "page": "response-model",
+    "title": "Response Model - Return Type",
+    "section": "Return a Response Directly",
+    "url": "https://fastapi.tiangolo.com/tutorial/response-model/#return-a-response-directly",
+    "text": "The most common case would be returning a Response directly as explained later in the advanced docs .\n\nfrom fastapi import FastAPI, Response\nfrom fastapi.responses import JSONResponse, RedirectResponse\n\napp = FastAPI()\n\n\n@app.get(\"/portal\")\nasync def get_portal(teleport: bool = False) -> Response:\n    if teleport:\n        return RedirectResponse(url=\"https://www.youtube.com/watch?v=dQw4w9WgXcQ\")\n    return JSONResponse(content={\"message\": \"Here's your interdimensional portal.\"})\n\nThis simple case is handled automatically by FastAPI because the return type annotation is the class (or a subclass of) Response .\n\nAnd tools will also be happy because both RedirectResponse and JSONResponse are subclasses of Response , so the type annotation is correct."
+  },
+  {
+    "id": "response-model-012",
+    "page": "response-model",
+    "title": "Response Model - Return Type",
+    "section": "Annotate a Response Subclass",
+    "url": "https://fastapi.tiangolo.com/tutorial/response-model/#annotate-a-response-subclass",
+    "text": "You can also use a subclass of Response in the type annotation:\n\nfrom fastapi import FastAPI\nfrom fastapi.responses import RedirectResponse\n\napp = FastAPI()\n\n\n@app.get(\"/teleport\")\nasync def get_teleport() -> RedirectResponse:\n    return RedirectResponse(url=\"https://www.youtube.com/watch?v=dQw4w9WgXcQ\")\n\nThis will also work because RedirectResponse is a subclass of Response , and FastAPI will automatically handle this simple case."
+  },
+  {
+    "id": "response-model-013",
+    "page": "response-model",
+    "title": "Response Model - Return Type",
+    "section": "Invalid Return Type Annotations",
+    "url": "https://fastapi.tiangolo.com/tutorial/response-model/#invalid-return-type-annotations",
+    "text": "But when you return some other arbitrary object that is not a valid Pydantic type (e.g. a database object) and you annotate it like that in the function, FastAPI will try to create a Pydantic response model from that type annotation, and will fail.\n\nThe same would happen if you had something like a union between different types where one or more of them are not valid Pydantic types, for example this would fail 💥:\n\nfrom fastapi import FastAPI, Response\nfrom fastapi.responses import RedirectResponse\n\napp = FastAPI()\n\n\n@app.get(\"/portal\")\nasync def get_portal(teleport: bool = False) -> Response | dict:\n    if teleport:\n        return RedirectResponse(url=\"https://www.youtube.com/watch?v=dQw4w9WgXcQ\")\n    return {\"message\": \"Here's your interdimensional portal.\"}\n\n...this fails because the type annotation is not a Pydantic type and is not just a single Response class or subclass, it's a union (any of the two) between a Response and a dict ."
+  },
+  {
+    "id": "response-model-014",
+    "page": "response-model",
+    "title": "Response Model - Return Type",
+    "section": "Disable Response Model",
+    "url": "https://fastapi.tiangolo.com/tutorial/response-model/#disable-response-model",
+    "text": "Continuing from the example above, you might not want to have the default data validation, documentation, filtering, etc. that is performed by FastAPI.\n\nBut you might want to still keep the return type annotation in the function to get the support from tools like editors and type checkers (e.g. mypy).\n\nIn this case, you can disable the response model generation by setting response_model=None :\n\nfrom fastapi import FastAPI, Response\nfrom fastapi.responses import RedirectResponse\n\napp = FastAPI()\n\n\n@app.get(\"/portal\", response_model=None)\nasync def get_portal(teleport: bool = False) -> Response | dict:\n    if teleport:\n        return RedirectResponse(url=\"https://www.youtube.com/watch?v=dQw4w9WgXcQ\")\n    return {\"message\": \"Here's your interdimensional portal.\"}\n\nThis will make FastAPI skip the response model generation and that way you can have any return type annotations you need without it affecting your FastAPI application. 🤓"
+  },
+  {
+    "id": "response-model-015",
+    "page": "response-model",
+    "title": "Response Model - Return Type",
+    "section": "Response Model encoding parameters",
+    "url": "https://fastapi.tiangolo.com/tutorial/response-model/#response-model-encoding-parameters",
+    "text": "Your response model could have default values, like:\n\nfrom fastapi import FastAPI\nfrom pydantic import BaseModel\n\napp = FastAPI()\n\n\nclass Item(BaseModel):\n    name: str\n    description: str | None = None\n    price: float\n    tax: float = 10.5\n    tags: list[str] = []\n\n\nitems = {\n    \"foo\": {\"name\": \"Foo\", \"price\": 50.2},\n    \"bar\": {\"name\": \"Bar\", \"description\": \"The bartenders\", \"price\": 62, \"tax\": 20.2},\n    \"baz\": {\"name\": \"Baz\", \"description\": None, \"price\": 50.2, \"tax\": 10.5, \"tags\": []},\n}\n\n\n@app.get(\"/items/{item_id}\", response_model=Item, response_model_exclude_unset=True)\nasync def read_item(item_id: str):\n    return items[item_id]\n\ndescription: Union[str, None] = None (or str | None = None in Python 3.10) has a default of None .\n\ntax: float = 10.5 has a default of 10.5 .\n\ntags: List[str] = [] has a default of an empty list: [] .\n\nbut you might want to omit them from the result if they were not actually stored.\n\nFor example, if you have models with many optional attributes in a NoSQL database, but you don't want to send very long JSON responses full of default values."
+  },
+  {
+    "id": "response-model-016",
+    "page": "response-model",
+    "title": "Response Model - Return Type",
+    "section": "Use the response_model_exclude_unset parameter",
+    "url": "https://fastapi.tiangolo.com/tutorial/response-model/#use-the-response-model-exclude-unset-parameter",
+    "text": "You can set the path operation decorator parameter response_model_exclude_unset=True :\n\nfrom fastapi import FastAPI\nfrom pydantic import BaseModel\n\napp = FastAPI()\n\n\nclass Item(BaseModel):\n    name: str\n    description: str | None = None\n    price: float\n    tax: float = 10.5\n    tags: list[str] = []\n\n\nitems = {\n    \"foo\": {\"name\": \"Foo\", \"price\": 50.2},\n    \"bar\": {\"name\": \"Bar\", \"description\": \"The bartenders\", \"price\": 62, \"tax\": 20.2},\n    \"baz\": {\"name\": \"Baz\", \"description\": None, \"price\": 50.2, \"tax\": 10.5, \"tags\": []},\n}\n\n\n@app.get(\"/items/{item_id}\", response_model=Item, response_model_exclude_unset=True)\nasync def read_item(item_id: str):\n    return items[item_id]\n\nand those default values won't be included in the response, only the values actually set.\n\nSo, if you send a request to that path operation for the item with ID foo , the response (not including default values) will be:\n\n{\n    \"name\": \"Foo\",\n    \"price\": 50.2\n}\n\nNote\n\nYou can also use:\n\nresponse_model_exclude_defaults=True\n\nresponse_model_exclude_none=True\n\nas described in the Pydantic docs for exclude_defaults and exclude_none ."
+  },
+  {
+    "id": "response-model-017",
+    "page": "response-model",
+    "title": "Response Model - Return Type",
+    "section": "Data with values for fields with defaults",
+    "url": "https://fastapi.tiangolo.com/tutorial/response-model/#data-with-values-for-fields-with-defaults",
+    "text": "But if your data has values for the model's fields with default values, like the item with ID bar :\n\n{\n    \"name\": \"Bar\",\n    \"description\": \"The bartenders\",\n    \"price\": 62,\n    \"tax\": 20.2\n}\n\nthey will be included in the response."
+  },
+  {
+    "id": "response-model-018",
+    "page": "response-model",
+    "title": "Response Model - Return Type",
+    "section": "Data with the same values as the defaults",
+    "url": "https://fastapi.tiangolo.com/tutorial/response-model/#data-with-the-same-values-as-the-defaults",
+    "text": "If the data has the same values as the default ones, like the item with ID baz :\n\n{\n    \"name\": \"Baz\",\n    \"description\": None,\n    \"price\": 50.2,\n    \"tax\": 10.5,\n    \"tags\": []\n}\n\nFastAPI is smart enough (actually, Pydantic is smart enough) to realize that, even though description , tax , and tags have the same values as the defaults, they were set explicitly (instead of taken from the defaults).\n\nSo, they will be included in the JSON response.\n\nTip\n\nNotice that the default values can be anything, not only None .\n\nThey can be a list ( [] ), a float of 10.5 , etc."
+  },
+  {
+    "id": "response-model-019",
+    "page": "response-model",
+    "title": "Response Model - Return Type",
+    "section": "response_model_include and response_model_exclude",
+    "url": "https://fastapi.tiangolo.com/tutorial/response-model/#response-model-include-and-response-model-exclude",
+    "text": "You can also use the path operation decorator parameters response_model_include and response_model_exclude .\n\nThey take a set of str with the name of the attributes to include (omitting the rest) or to exclude (including the rest).\n\nThis can be used as a quick shortcut if you have only one Pydantic model and want to remove some data from the output.\n\nTip\n\nBut it is still recommended to use the ideas above, using multiple classes, instead of these parameters.\n\nThis is because the JSON Schema generated in your app's OpenAPI (and the docs) will still be the one for the complete model, even if you use response_model_include or response_model_exclude to omit some attributes.\n\nThis also applies to response_model_by_alias that works similarly.\n\nfrom fastapi import FastAPI\nfrom pydantic import BaseModel\n\napp = FastAPI()\n\n\nclass Item(BaseModel):\n    name: str\n    description: str | None = None\n    price: float\n    tax: float = 10.5\n\n\nitems = {\n    \"foo\": {\"name\": \"Foo\", \"price\": 50.2},\n    \"bar\": {\"name\": \"Bar\", \"description\": \"The Bar fighters\", \"price\": 62, \"tax\": 20.2},\n    \"baz\": {\n        \"name\": \"Baz\",\n        \"description\": \"There goes my baz\",\n        \"price\": 50.2,\n        \"tax\": 10.5,\n    },\n}\n\n\n@app.get(\n    \"/items/{item_id}/name\",\n    response_model=Item,\n    response_model_include={\"name\", \"description\"},\n)\nasync def read_item_name(item_id: str):\n    return items[item_id]\n\n\n@app.get(\"/items/{item_id}/public\", response_model=Item, response_model_exclude={\"tax\"})\nasync def read_item_public_data(item_id: str):\n    return items[item_id]\n\nTip\n\nThe syntax {\"name\", \"description\"} creates a set with those two values.\n\nIt is equivalent to set([\"name\", \"description\"]) ."
+  },
+  {
+    "id": "response-model-020",
+    "page": "response-model",
+    "title": "Response Model - Return Type",
+    "section": "Using list s instead of set s",
+    "url": "https://fastapi.tiangolo.com/tutorial/response-model/#using-lists-instead-of-sets",
+    "text": "If you forget to use a set and use a list or tuple instead, FastAPI will still convert it to a set and it will work correctly:\n\nfrom fastapi import FastAPI\nfrom pydantic import BaseModel\n\napp = FastAPI()\n\n\nclass Item(BaseModel):\n    name: str\n    description: str | None = None\n    price: float\n    tax: float = 10.5\n\n\nitems = {\n    \"foo\": {\"name\": \"Foo\", \"price\": 50.2},\n    \"bar\": {\"name\": \"Bar\", \"description\": \"The Bar fighters\", \"price\": 62, \"tax\": 20.2},\n    \"baz\": {\n        \"name\": \"Baz\",\n        \"description\": \"There goes my baz\",\n        \"price\": 50.2,\n        \"tax\": 10.5,\n    },\n}\n\n\n@app.get(\n    \"/items/{item_id}/name\",\n    response_model=Item,\n    response_model_include=[\"name\", \"description\"],\n)\nasync def read_item_name(item_id: str):\n    return items[item_id]\n\n\n@app.get(\"/items/{item_id}/public\", response_model=Item, response_model_exclude=[\"tax\"])\nasync def read_item_public_data(item_id: str):\n    return items[item_id]"
+  },
+  {
+    "id": "response-model-021",
+    "page": "response-model",
+    "title": "Response Model - Return Type",
+    "section": "Recap",
+    "url": "https://fastapi.tiangolo.com/tutorial/response-model/#recap",
+    "text": "Use the path operation decorator's parameter response_model to define response models and especially to ensure private data is filtered out.\n\nUse response_model_exclude_unset to return only the values explicitly set."
+  },
+  {
+    "id": "response-status-code-000",
+    "page": "response-status-code",
+    "title": "Response Status Code",
+    "section": "Response Status Code",
+    "url": "https://fastapi.tiangolo.com/tutorial/response-status-code/#response-status-code",
+    "text": "The same way you can specify a response model, you can also declare the HTTP status code used for the response with the parameter status_code in any of the path operations :\n\n@app.get()\n\n@app.post()\n\n@app.put()\n\n@app.delete()\n\netc.\n\nfrom fastapi import FastAPI\n\napp = FastAPI()\n\n\n@app.post(\"/items/\", status_code=201)\nasync def create_item(name: str):\n    return {\"name\": name}\n\nNote\n\nNotice that status_code is a parameter of the \"decorator\" method ( get , post , etc). Not of your path operation function , like all the parameters and body.\n\nThe status_code parameter receives a number with the HTTP status code.\n\nNote\n\nstatus_code can alternatively also receive an IntEnum , such as Python's http.HTTPStatus .\n\nIt will:\n\nReturn that status code in the response.\n\nDocument it as such in the OpenAPI schema (and so, in the user interfaces):\n\nNote\n\nSome response codes (see the next section) indicate that the response does not have a body.\n\nFastAPI knows this, and will produce OpenAPI docs that state there is no response body."
+  },
+  {
+    "id": "response-status-code-001",
+    "page": "response-status-code",
+    "title": "Response Status Code",
+    "section": "About HTTP status codes",
+    "url": "https://fastapi.tiangolo.com/tutorial/response-status-code/#about-http-status-codes",
+    "text": "Note\n\nIf you already know what HTTP status codes are, skip to the next section.\n\nIn HTTP, you send a numeric status code of 3 digits as part of the response.\n\nThese status codes have an associated name to help recognize them, but the important part is the number.\n\nIn short:\n\n100 - 199 are for \"Information\". You rarely use them directly.  Responses with these status codes cannot have a body.\n\n200 - 299 are for \"Successful\" responses. These are the ones you would use the most. 200 is the default status code, which means everything was \"OK\". Another example would be 201 , \"Created\". It is commonly used after creating a new record in the database. A special case is 204 , \"No Content\".  This response is used when there is no content to return to the client, and so the response must not have a body.\n\n300 - 399 are for \"Redirection\".  Responses with these status codes may or may not have a body, except for 304 , \"Not Modified\", which must not have one.\n\n400 - 499 are for \"Client error\" responses. These are the second type you would probably use the most. An example is 404 , for a \"Not Found\" response. For generic errors from the client, you can just use 400 .\n\n500 - 599 are for server errors. You almost never use them directly. When something goes wrong at some part in your application code, or server, it will automatically return one of these status codes.\n\nTip\n\nTo know more about each status code and which code is for what, check the MDN documentation about HTTP status codes ."
+  },
+  {
+    "id": "response-status-code-002",
+    "page": "response-status-code",
+    "title": "Response Status Code",
+    "section": "Shortcut to remember the names",
+    "url": "https://fastapi.tiangolo.com/tutorial/response-status-code/#shortcut-to-remember-the-names",
+    "text": "Let's see the previous example again:\n\nfrom fastapi import FastAPI\n\napp = FastAPI()\n\n\n@app.post(\"/items/\", status_code=201)\nasync def create_item(name: str):\n    return {\"name\": name}\n\n201 is the status code for \"Created\".\n\nBut you don't have to memorize what each of these codes mean.\n\nYou can use the convenience variables from fastapi.status .\n\nfrom fastapi import FastAPI, status\n\napp = FastAPI()\n\n\n@app.post(\"/items/\", status_code=status.HTTP_201_CREATED)\nasync def create_item(name: str):\n    return {\"name\": name}\n\nThey are just a convenience, they hold the same number, but that way you can use the editor's autocomplete to find them:\n\nTechnical Details\n\nYou could also use from starlette import status .\n\nFastAPI provides the same starlette.status as fastapi.status just as a convenience for you, the developer. But it comes directly from Starlette."
+  },
+  {
+    "id": "response-status-code-003",
+    "page": "response-status-code",
+    "title": "Response Status Code",
+    "section": "Changing the default",
+    "url": "https://fastapi.tiangolo.com/tutorial/response-status-code/#changing-the-default",
+    "text": "Later, in the Advanced User Guide , you will see how to return a different status code than the default you are declaring here."
+  },
+  {
+    "id": "handling-errors-000",
+    "page": "handling-errors",
+    "title": "Handling Errors",
+    "section": "Handling Errors",
+    "url": "https://fastapi.tiangolo.com/tutorial/handling-errors/#handling-errors",
+    "text": "There are many situations in which you need to report an error to a client that is using your API.\n\nThis client could be a browser with a frontend, a code from someone else, an IoT device, etc.\n\nYou could need to tell the client that:\n\nThe client doesn't have enough privileges for that operation.\n\nThe client doesn't have access to that resource.\n\nThe item the client was trying to access doesn't exist.\n\netc.\n\nIn these cases, you would normally return an HTTP status code in the range of 400 (from 400 to 499).\n\nThis is similar to the 200 HTTP status codes (from 200 to 299). Those \"200\" status codes mean that somehow there was a \"success\" in the request.\n\nThe status codes in the 400 range mean that there was an error from the client.\n\nRemember all those \"404 Not Found\" errors (and jokes)?"
+  },
+  {
+    "id": "handling-errors-001",
+    "page": "handling-errors",
+    "title": "Handling Errors",
+    "section": "Use HTTPException",
+    "url": "https://fastapi.tiangolo.com/tutorial/handling-errors/#use-httpexception",
+    "text": "To return HTTP responses with errors to the client you use HTTPException ."
+  },
+  {
+    "id": "handling-errors-002",
+    "page": "handling-errors",
+    "title": "Handling Errors",
+    "section": "Import HTTPException",
+    "url": "https://fastapi.tiangolo.com/tutorial/handling-errors/#import-httpexception",
+    "text": "from fastapi import FastAPI, HTTPException\n\napp = FastAPI()\n\nitems = {\"foo\": \"The Foo Wrestlers\"}\n\n\n@app.get(\"/items/{item_id}\")\nasync def read_item(item_id: str):\n    if item_id not in items:\n        raise HTTPException(status_code=404, detail=\"Item not found\")\n    return {\"item\": items[item_id]}"
+  },
+  {
+    "id": "handling-errors-003",
+    "page": "handling-errors",
+    "title": "Handling Errors",
+    "section": "Raise an HTTPException in your code",
+    "url": "https://fastapi.tiangolo.com/tutorial/handling-errors/#raise-an-httpexception-in-your-code",
+    "text": "HTTPException is a normal Python exception with additional data relevant for APIs.\n\nBecause it's a Python exception, you don't return it, you raise it.\n\nThis also means that if you are inside a utility function that you are calling inside of your path operation function , and you raise the HTTPException from inside of that utility function, it won't run the rest of the code in the path operation function , it will terminate that request right away and send the HTTP error from the HTTPException to the client.\n\nThe benefit of raising an exception over returning a value will be more evident in the section about Dependencies and Security.\n\nIn this example, when the client requests an item by an ID that doesn't exist, raise an exception with a status code of 404 :\n\nfrom fastapi import FastAPI, HTTPException\n\napp = FastAPI()\n\nitems = {\"foo\": \"The Foo Wrestlers\"}\n\n\n@app.get(\"/items/{item_id}\")\nasync def read_item(item_id: str):\n    if item_id not in items:\n        raise HTTPException(status_code=404, detail=\"Item not found\")\n    return {\"item\": items[item_id]}"
+  },
+  {
+    "id": "handling-errors-004",
+    "page": "handling-errors",
+    "title": "Handling Errors",
+    "section": "The resulting response",
+    "url": "https://fastapi.tiangolo.com/tutorial/handling-errors/#the-resulting-response",
+    "text": "If the client requests http://example.com/items/foo (an item_id \"foo\" ), that client will receive an HTTP status code of 200, and a JSON response of:\n\n{\n  \"item\": \"The Foo Wrestlers\"\n}\n\nBut if the client requests http://example.com/items/bar (a non-existent item_id \"bar\" ), that client will receive an HTTP status code of 404 (the \"not found\" error), and a JSON response of:\n\n{\n  \"detail\": \"Item not found\"\n}\n\nTip\n\nWhen raising an HTTPException , you can pass any value that can be converted to JSON as the parameter detail , not only str .\n\nYou could pass a dict , a list , etc.\n\nThey are handled automatically by FastAPI and converted to JSON."
+  },
+  {
+    "id": "handling-errors-005",
+    "page": "handling-errors",
+    "title": "Handling Errors",
+    "section": "Add custom headers",
+    "url": "https://fastapi.tiangolo.com/tutorial/handling-errors/#add-custom-headers",
+    "text": "There are some situations where it's useful to be able to add custom headers to the HTTP error. For example, for some types of security.\n\nYou probably won't need to use it directly in your code.\n\nBut in case you needed it for an advanced scenario, you can add custom headers:\n\nfrom fastapi import FastAPI, HTTPException\n\napp = FastAPI()\n\nitems = {\"foo\": \"The Foo Wrestlers\"}\n\n\n@app.get(\"/items-header/{item_id}\")\nasync def read_item_header(item_id: str):\n    if item_id not in items:\n        raise HTTPException(\n            status_code=404,\n            detail=\"Item not found\",\n            headers={\"X-Error\": \"There goes my error\"},\n        )\n    return {\"item\": items[item_id]}"
+  },
+  {
+    "id": "handling-errors-006",
+    "page": "handling-errors",
+    "title": "Handling Errors",
+    "section": "Install custom exception handlers",
+    "url": "https://fastapi.tiangolo.com/tutorial/handling-errors/#install-custom-exception-handlers",
+    "text": "You can add custom exception handlers with the same exception utilities from Starlette .\n\nLet's say you have a custom exception UnicornException that you (or a library you use) might raise .\n\nAnd you want to handle this exception globally with FastAPI.\n\nYou could add a custom exception handler with @app.exception_handler() :\n\nfrom fastapi import FastAPI, Request\nfrom fastapi.responses import JSONResponse\n\n\nclass UnicornException(Exception):\n    def __init__(self, name: str):\n        self.name = name\n\n\napp = FastAPI()\n\n\n@app.exception_handler(UnicornException)\nasync def unicorn_exception_handler(request: Request, exc: UnicornException):\n    return JSONResponse(\n        status_code=418,\n        content={\"message\": f\"Oops! {exc.name} did something. There goes a rainbow...\"},\n    )\n\n\n@app.get(\"/unicorns/{name}\")\nasync def read_unicorn(name: str):\n    if name == \"yolo\":\n        raise UnicornException(name=name)\n    return {\"unicorn_name\": name}\n\nHere, if you request /unicorns/yolo , the path operation will raise a UnicornException .\n\nBut it will be handled by the unicorn_exception_handler .\n\nSo, you will receive a clean error, with an HTTP status code of 418 and a JSON content of:\n\n{\"message\": \"Oops! yolo did something. There goes a rainbow...\"}\n\nTechnical Details\n\nYou could also use from starlette.requests import Request and from starlette.responses import JSONResponse .\n\nFastAPI provides the same starlette.responses as fastapi.responses just as a convenience for you, the developer. But most of the available responses come directly from Starlette. The same with Request ."
+  },
+  {
+    "id": "handling-errors-007",
+    "page": "handling-errors",
+    "title": "Handling Errors",
+    "section": "Override the default exception handlers",
+    "url": "https://fastapi.tiangolo.com/tutorial/handling-errors/#override-the-default-exception-handlers",
+    "text": "FastAPI has some default exception handlers.\n\nThese handlers are in charge of returning the default JSON responses when you raise an HTTPException and when the request has invalid data.\n\nYou can override these exception handlers with your own."
+  },
+  {
+    "id": "handling-errors-008",
+    "page": "handling-errors",
+    "title": "Handling Errors",
+    "section": "Override request validation exceptions",
+    "url": "https://fastapi.tiangolo.com/tutorial/handling-errors/#override-request-validation-exceptions",
+    "text": "When a request contains invalid data, FastAPI internally raises a RequestValidationError .\n\nAnd it also includes a default exception handler for it.\n\nTo override it, import the RequestValidationError and use it with @app.exception_handler(RequestValidationError) to decorate the exception handler.\n\nThe exception handler will receive a Request and the exception.\n\nfrom fastapi import FastAPI, HTTPException\nfrom fastapi.exceptions import RequestValidationError\nfrom fastapi.responses import PlainTextResponse\nfrom starlette.exceptions import HTTPException as StarletteHTTPException\n\napp = FastAPI()\n\n\n@app.exception_handler(StarletteHTTPException)\nasync def http_exception_handler(request, exc):\n    return PlainTextResponse(str(exc.detail), status_code=exc.status_code)\n\n\n@app.exception_handler(RequestValidationError)\nasync def validation_exception_handler(request, exc: RequestValidationError):\n    message = \"Validation errors:\"\n    for error in exc.errors():\n        message += f\"\\nField: {error['loc']}, Error: {error['msg']}\"\n    return PlainTextResponse(message, status_code=400)\n\n\n@app.get(\"/items/{item_id}\")\nasync def read_item(item_id: int):\n    if item_id == 3:\n        raise HTTPException(status_code=418, detail=\"Nope! I don't like 3.\")\n    return {\"item_id\": item_id}\n\nNow, if you go to /items/foo , instead of getting the default JSON error with:\n\n{\n    \"detail\": [\n        {\n            \"loc\": [\n                \"path\",\n                \"item_id\"\n            ],\n            \"msg\": \"value is not a valid integer\",\n            \"type\": \"type_error.integer\"\n        }\n    ]\n}\n\nyou will get a text version, with:\n\nValidation errors:\nField: ('path', 'item_id'), Error: Input should be a valid integer, unable to parse string as an integer"
+  },
+  {
+    "id": "handling-errors-009",
+    "page": "handling-errors",
+    "title": "Handling Errors",
+    "section": "Override the HTTPException error handler",
+    "url": "https://fastapi.tiangolo.com/tutorial/handling-errors/#override-the-httpexception-error-handler",
+    "text": "The same way, you can override the HTTPException handler.\n\nFor example, you could want to return a plain text response instead of JSON for these errors:\n\nfrom fastapi import FastAPI, HTTPException\nfrom fastapi.exceptions import RequestValidationError\nfrom fastapi.responses import PlainTextResponse\nfrom starlette.exceptions import HTTPException as StarletteHTTPException\n\napp = FastAPI()\n\n\n@app.exception_handler(StarletteHTTPException)\nasync def http_exception_handler(request, exc):\n    return PlainTextResponse(str(exc.detail), status_code=exc.status_code)\n\n\n@app.exception_handler(RequestValidationError)\nasync def validation_exception_handler(request, exc: RequestValidationError):\n    message = \"Validation errors:\"\n    for error in exc.errors():\n        message += f\"\\nField: {error['loc']}, Error: {error['msg']}\"\n    return PlainTextResponse(message, status_code=400)\n\n\n@app.get(\"/items/{item_id}\")\nasync def read_item(item_id: int):\n    if item_id == 3:\n        raise HTTPException(status_code=418, detail=\"Nope! I don't like 3.\")\n    return {\"item_id\": item_id}\n\nTechnical Details\n\nYou could also use from starlette.responses import PlainTextResponse .\n\nFastAPI provides the same starlette.responses as fastapi.responses just as a convenience for you, the developer. But most of the available responses come directly from Starlette.\n\nWarning\n\nHave in mind that the RequestValidationError contains the information of the file name and line where the validation error happens so that you can show it in your logs with the relevant information if you want to.\n\nBut that means that if you just convert it to a string and return that information directly, you could be leaking a bit of information about your system, that's why here the code extracts and shows each error independently."
+  },
+  {
+    "id": "handling-errors-010",
+    "page": "handling-errors",
+    "title": "Handling Errors",
+    "section": "Use the RequestValidationError body",
+    "url": "https://fastapi.tiangolo.com/tutorial/handling-errors/#use-the-requestvalidationerror-body",
+    "text": "The RequestValidationError contains the body it received with invalid data.\n\nYou could use it while developing your app to log the body and debug it, return it to the user, etc.\n\nfrom fastapi import FastAPI, Request\nfrom fastapi.encoders import jsonable_encoder\nfrom fastapi.exceptions import RequestValidationError\nfrom fastapi.responses import JSONResponse\nfrom pydantic import BaseModel\n\napp = FastAPI()\n\n\n@app.exception_handler(RequestValidationError)\nasync def validation_exception_handler(request: Request, exc: RequestValidationError):\n    return JSONResponse(\n        status_code=422,\n        content=jsonable_encoder({\"detail\": exc.errors(), \"body\": exc.body}),\n    )\n\n\nclass Item(BaseModel):\n    title: str\n    size: int\n\n\n@app.post(\"/items/\")\nasync def create_item(item: Item):\n    return item\n\nNow try sending an invalid item like:\n\n{\n  \"title\": \"towel\",\n  \"size\": \"XL\"\n}\n\nYou will receive a response telling you that the data is invalid containing the received body:\n\n{\n  \"detail\": [\n    {\n      \"loc\": [\n        \"body\",\n        \"size\"\n      ],\n      \"msg\": \"value is not a valid integer\",\n      \"type\": \"type_error.integer\"\n    }\n  ],\n  \"body\": {\n    \"title\": \"towel\",\n    \"size\": \"XL\"\n  }\n}"
+  },
+  {
+    "id": "handling-errors-011",
+    "page": "handling-errors",
+    "title": "Handling Errors",
+    "section": "FastAPI's HTTPException vs Starlette's HTTPException",
+    "url": "https://fastapi.tiangolo.com/tutorial/handling-errors/#fastapis-httpexception-vs-starlettes-httpexception",
+    "text": "FastAPI has its own HTTPException .\n\nAnd FastAPI 's HTTPException error class inherits from Starlette's HTTPException error class.\n\nThe only difference is that FastAPI 's HTTPException accepts any JSON-able data for the detail field, while Starlette's HTTPException only accepts strings for it.\n\nSo, you can keep raising FastAPI 's HTTPException as normally in your code.\n\nBut when you register an exception handler, you should register it for Starlette's HTTPException .\n\nThis way, if any part of Starlette's internal code, or a Starlette extension or plug-in, raises a Starlette HTTPException , your handler will be able to catch and handle it.\n\nIn this example, to be able to have both HTTPException s in the same code, Starlette's exceptions is renamed to StarletteHTTPException :\n\nfrom starlette.exceptions import HTTPException as StarletteHTTPException"
+  },
+  {
+    "id": "handling-errors-012",
+    "page": "handling-errors",
+    "title": "Handling Errors",
+    "section": "Reuse FastAPI 's exception handlers",
+    "url": "https://fastapi.tiangolo.com/tutorial/handling-errors/#reuse-fastapis-exception-handlers",
+    "text": "If you want to use the exception along with the same default exception handlers from FastAPI , you can import and reuse the default exception handlers from fastapi.exception_handlers :\n\nfrom fastapi import FastAPI, HTTPException\nfrom fastapi.exception_handlers import (\n    http_exception_handler,\n    request_validation_exception_handler,\n)\nfrom fastapi.exceptions import RequestValidationError\nfrom starlette.exceptions import HTTPException as StarletteHTTPException\n\napp = FastAPI()\n\n\n@app.exception_handler(StarletteHTTPException)\nasync def custom_http_exception_handler(request, exc):\n    print(f\"OMG! An HTTP error!: {repr(exc)}\")\n    return await http_exception_handler(request, exc)\n\n\n@app.exception_handler(RequestValidationError)\nasync def validation_exception_handler(request, exc):\n    print(f\"OMG! The client sent invalid data!: {exc}\")\n    return await request_validation_exception_handler(request, exc)\n\n\n@app.get(\"/items/{item_id}\")\nasync def read_item(item_id: int):\n    if item_id == 3:\n        raise HTTPException(status_code=418, detail=\"Nope! I don't like 3.\")\n    return {\"item_id\": item_id}\n\nIn this example you are just printing the error with a very expressive message, but you get the idea. You can use the exception and then just reuse the default exception handlers."
+  },
+  {
+    "id": "dependencies-000",
+    "page": "dependencies",
+    "title": "Dependencies",
+    "section": "Dependencies",
+    "url": "https://fastapi.tiangolo.com/tutorial/dependencies/#dependencies",
+    "text": "FastAPI has a very powerful but intuitive Dependency Injection system.\n\nIt is designed to be very simple to use, and to make it very easy for any developer to integrate other components with FastAPI ."
+  },
+  {
+    "id": "dependencies-001",
+    "page": "dependencies",
+    "title": "Dependencies",
+    "section": "What is \"Dependency Injection\"",
+    "url": "https://fastapi.tiangolo.com/tutorial/dependencies/#what-is-dependency-injection",
+    "text": "\"Dependency Injection\" means, in programming, that there is a way for your code (in this case, your path operation functions ) to declare things that it requires to work and use: \"dependencies\".\n\nAnd then, that system (in this case FastAPI ) will take care of doing whatever is needed to provide your code with those needed dependencies (\"inject\" the dependencies).\n\nThis is very useful when you need to:\n\nHave shared logic (the same code logic again and again).\n\nShare database connections.\n\nEnforce security, authentication, role requirements, etc.\n\nAnd many other things...\n\nAll these, while minimizing code repetition."
+  },
+  {
+    "id": "dependencies-002",
+    "page": "dependencies",
+    "title": "Dependencies",
+    "section": "First Steps",
+    "url": "https://fastapi.tiangolo.com/tutorial/dependencies/#first-steps",
+    "text": "Let's see a very simple example. It will be so simple that it is not very useful, for now.\n\nBut this way we can focus on how the Dependency Injection system works."
+  },
+  {
+    "id": "dependencies-003",
+    "page": "dependencies",
+    "title": "Dependencies",
+    "section": "Create a dependency, or \"dependable\"",
+    "url": "https://fastapi.tiangolo.com/tutorial/dependencies/#create-a-dependency-or-dependable",
+    "text": "Let's first focus on the dependency.\n\nIt is just a function that can take all the same parameters that a path operation function can take:\n\nfrom typing import Annotated\n\nfrom fastapi import Depends, FastAPI\n\napp = FastAPI()\n\n\nasync def common_parameters(q: str | None = None, skip: int = 0, limit: int = 100):\n    return {\"q\": q, \"skip\": skip, \"limit\": limit}\n\n\n@app.get(\"/items/\")\nasync def read_items(commons: Annotated[dict, Depends(common_parameters)]):\n    return commons\n\n\n@app.get(\"/users/\")\nasync def read_users(commons: Annotated[dict, Depends(common_parameters)]):\n    return commons\n\nTip\n\nPrefer to use the Annotated version if possible.\n\nfrom fastapi import Depends, FastAPI\n\napp = FastAPI()\n\n\nasync def common_parameters(q: str | None = None, skip: int = 0, limit: int = 100):\n    return {\"q\": q, \"skip\": skip, \"limit\": limit}\n\n\n@app.get(\"/items/\")\nasync def read_items(commons: dict = Depends(common_parameters)):\n    return commons\n\n\n@app.get(\"/users/\")\nasync def read_users(commons: dict = Depends(common_parameters)):\n    return commons\n\nThat's it.\n\n2 lines .\n\nAnd it has the same shape and structure that all your path operation functions have.\n\nYou can think of it as a path operation function without the \"decorator\" (without the @app.get(\"/some-path\") ).\n\nAnd it can return anything you want.\n\nIn this case, this dependency expects:\n\nAn optional query parameter q that is a str .\n\nAn optional query parameter skip that is an int , and by default is 0 .\n\nAn optional query parameter limit that is an int , and by default is 100 .\n\nAnd then it just returns a dict containing those values.\n\nNote\n\nFastAPI added support for Annotated (and started recommending it) in version 0.95.0.\n\nIf you have an older version, you would get errors when trying to use Annotated .\n\nMake sure you Upgrade the FastAPI version to at least 0.95.1 before using Annotated ."
+  },
+  {
+    "id": "dependencies-004",
+    "page": "dependencies",
+    "title": "Dependencies",
+    "section": "Import Depends",
+    "url": "https://fastapi.tiangolo.com/tutorial/dependencies/#import-depends",
+    "text": "from typing import Annotated\n\nfrom fastapi import Depends, FastAPI\n\napp = FastAPI()\n\n\nasync def common_parameters(q: str | None = None, skip: int = 0, limit: int = 100):\n    return {\"q\": q, \"skip\": skip, \"limit\": limit}\n\n\n@app.get(\"/items/\")\nasync def read_items(commons: Annotated[dict, Depends(common_parameters)]):\n    return commons\n\n\n@app.get(\"/users/\")\nasync def read_users(commons: Annotated[dict, Depends(common_parameters)]):\n    return commons\n\nTip\n\nPrefer to use the Annotated version if possible.\n\nfrom fastapi import Depends, FastAPI\n\napp = FastAPI()\n\n\nasync def common_parameters(q: str | None = None, skip: int = 0, limit: int = 100):\n    return {\"q\": q, \"skip\": skip, \"limit\": limit}\n\n\n@app.get(\"/items/\")\nasync def read_items(commons: dict = Depends(common_parameters)):\n    return commons\n\n\n@app.get(\"/users/\")\nasync def read_users(commons: dict = Depends(common_parameters)):\n    return commons"
+  },
+  {
+    "id": "dependencies-005",
+    "page": "dependencies",
+    "title": "Dependencies",
+    "section": "Declare the dependency, in the \"dependant\"",
+    "url": "https://fastapi.tiangolo.com/tutorial/dependencies/#declare-the-dependency-in-the-dependant",
+    "text": "The same way you use Body , Query , etc. with your path operation function parameters, use Depends with a new parameter:\n\nfrom typing import Annotated\n\nfrom fastapi import Depends, FastAPI\n\napp = FastAPI()\n\n\nasync def common_parameters(q: str | None = None, skip: int = 0, limit: int = 100):\n    return {\"q\": q, \"skip\": skip, \"limit\": limit}\n\n\n@app.get(\"/items/\")\nasync def read_items(commons: Annotated[dict, Depends(common_parameters)]):\n    return commons\n\n\n@app.get(\"/users/\")\nasync def read_users(commons: Annotated[dict, Depends(common_parameters)]):\n    return commons\n\nTip\n\nPrefer to use the Annotated version if possible.\n\nfrom fastapi import Depends, FastAPI\n\napp = FastAPI()\n\n\nasync def common_parameters(q: str | None = None, skip: int = 0, limit: int = 100):\n    return {\"q\": q, \"skip\": skip, \"limit\": limit}\n\n\n@app.get(\"/items/\")\nasync def read_items(commons: dict = Depends(common_parameters)):\n    return commons\n\n\n@app.get(\"/users/\")\nasync def read_users(commons: dict = Depends(common_parameters)):\n    return commons\n\nAlthough you use Depends in the parameters of your function the same way you use Body , Query , etc, Depends works a bit differently.\n\nYou only give Depends a single parameter.\n\nThis parameter must be something like a function.\n\nYou don't call it directly (don't add the parenthesis at the end), you just pass it as a parameter to Depends() .\n\nAnd that function takes parameters in the same way that path operation functions do.\n\nTip\n\nYou'll see what other \"things\", apart from functions, can be used as dependencies in the next chapter.\n\nWhenever a new request arrives, FastAPI will take care of:\n\nCalling your dependency (\"dependable\") function with the correct parameters.\n\nGet the result from your function.\n\nAssign that result to the parameter in your path operation function .\n\ngraph TB\n\ncommon_parameters([\"common_parameters\"])\nread_items[\"/items/\"]\nread_users[\"/users/\"]\n\ncommon_parameters --> read_items\ncommon_parameters --> read_users\n\nThis way you write shared code once and FastAPI takes care of calling it for your path operations .\n\nTip\n\nNotice that you don't have to create a special class and pass it somewhere to FastAPI to \"register\" it or anything similar.\n\nYou just pass it to Depends and FastAPI knows how to do the rest."
+  },
+  {
+    "id": "dependencies-006",
+    "page": "dependencies",
+    "title": "Dependencies",
+    "section": "Share Annotated dependencies",
+    "url": "https://fastapi.tiangolo.com/tutorial/dependencies/#share-annotated-dependencies",
+    "text": "In the examples above, you see that there's a tiny bit of code duplication .\n\nWhen you need to use the common_parameters() dependency, you have to write the whole parameter with the type annotation and Depends() :\n\ncommons: Annotated[dict, Depends(common_parameters)]\n\nBut because we are using Annotated , we can store that Annotated value in a variable and use it in multiple places:\n\nfrom typing import Annotated\n\nfrom fastapi import Depends, FastAPI\n\napp = FastAPI()\n\n\nasync def common_parameters(q: str | None = None, skip: int = 0, limit: int = 100):\n    return {\"q\": q, \"skip\": skip, \"limit\": limit}\n\n\nCommonsDep = Annotated[dict, Depends(common_parameters)]\n\n\n@app.get(\"/items/\")\nasync def read_items(commons: CommonsDep):\n    return commons\n\n\n@app.get(\"/users/\")\nasync def read_users(commons: CommonsDep):\n    return commons\n\nTip\n\nThis is just standard Python, it's called a \"type alias\", it's actually not specific to FastAPI .\n\nBut because FastAPI is based on the Python standards, including Annotated , you can use this trick in your code. 😎\n\nThe dependencies will keep working as expected, and the best part is that the type information will be preserved , which means that your editor will be able to keep providing you with autocompletion , inline errors , etc. The same for other tools like mypy .\n\nThis will be especially useful when you use it in a large code base where you use the same dependencies over and over again in many path operations ."
+  },
+  {
+    "id": "dependencies-007",
+    "page": "dependencies",
+    "title": "Dependencies",
+    "section": "To async or not to async",
+    "url": "https://fastapi.tiangolo.com/tutorial/dependencies/#to-async-or-not-to-async",
+    "text": "As dependencies will also be called by FastAPI (the same as your path operation functions ), the same rules apply while defining your functions.\n\nYou can use async def or normal def .\n\nAnd you can declare dependencies with async def inside of normal def path operation functions , or def dependencies inside of async def path operation functions , etc.\n\nIt doesn't matter. FastAPI will know what to do.\n\nNote\n\nIf you don't know, check the Async: \"In a hurry?\" section about async and await in the docs."
+  },
+  {
+    "id": "dependencies-008",
+    "page": "dependencies",
+    "title": "Dependencies",
+    "section": "Integrated with OpenAPI",
+    "url": "https://fastapi.tiangolo.com/tutorial/dependencies/#integrated-with-openapi",
+    "text": "All the request declarations, validations and requirements of your dependencies (and sub-dependencies) will be integrated in the same OpenAPI schema.\n\nSo, the interactive docs will have all the information from these dependencies too:"
+  },
+  {
+    "id": "dependencies-009",
+    "page": "dependencies",
+    "title": "Dependencies",
+    "section": "Simple usage",
+    "url": "https://fastapi.tiangolo.com/tutorial/dependencies/#simple-usage",
+    "text": "If you look at it, path operation functions are declared to be used whenever a path and operation matches, and then FastAPI takes care of calling the function with the correct parameters, extracting the data from the request.\n\nActually, all (or most) of the web frameworks work in this same way.\n\nYou never call those functions directly. They are called by your framework (in this case, FastAPI ).\n\nWith the Dependency Injection system, you can also tell FastAPI that your path operation function also \"depends\" on something else that should be executed before your path operation function , and FastAPI will take care of executing it and \"injecting\" the results.\n\nOther common terms for this same idea of \"dependency injection\" are:\n\nresources\n\nproviders\n\nservices\n\ninjectables\n\ncomponents"
+  },
+  {
+    "id": "dependencies-010",
+    "page": "dependencies",
+    "title": "Dependencies",
+    "section": "FastAPI plug-ins",
+    "url": "https://fastapi.tiangolo.com/tutorial/dependencies/#fastapi-plug-ins",
+    "text": "Integrations and \"plug-ins\" can be built using the Dependency Injection system. But in fact, there is actually no need to create \"plug-ins\" , as by using dependencies it's possible to declare an infinite number of integrations and interactions that become available to your path operation functions .\n\nAnd dependencies can be created in a very simple and intuitive way that allows you to just import the Python packages you need, and integrate them with your API functions in a couple of lines of code, literally .\n\nYou will see examples of this in the next chapters, about relational and NoSQL databases, security, etc."
+  },
+  {
+    "id": "dependencies-011",
+    "page": "dependencies",
+    "title": "Dependencies",
+    "section": "FastAPI compatibility",
+    "url": "https://fastapi.tiangolo.com/tutorial/dependencies/#fastapi-compatibility",
+    "text": "The simplicity of the dependency injection system makes FastAPI compatible with:\n\nall the relational databases\n\nNoSQL databases\n\nexternal packages\n\nexternal APIs\n\nauthentication and authorization systems\n\nAPI usage monitoring systems\n\nresponse data injection systems\n\netc."
+  },
+  {
+    "id": "dependencies-012",
+    "page": "dependencies",
+    "title": "Dependencies",
+    "section": "Simple and Powerful",
+    "url": "https://fastapi.tiangolo.com/tutorial/dependencies/#simple-and-powerful",
+    "text": "Although the hierarchical dependency injection system is very simple to define and use, it's still very powerful.\n\nYou can define dependencies that in turn can define dependencies themselves.\n\nIn the end, a hierarchical tree of dependencies is built, and the Dependency Injection system takes care of solving all these dependencies for you (and their sub-dependencies) and providing (injecting) the results at each step.\n\nFor example, let's say you have 4 API endpoints ( path operations ):\n\n/items/public/\n\n/items/private/\n\n/users/{user_id}/activate\n\n/items/pro/\n\nthen you could add different permission requirements for each of them just with dependencies and sub-dependencies:\n\ngraph TB\n\ncurrent_user([\"current_user\"])\nactive_user([\"active_user\"])\nadmin_user([\"admin_user\"])\npaying_user([\"paying_user\"])\n\npublic[\"/items/public/\"]\nprivate[\"/items/private/\"]\nactivate_user[\"/users/{user_id}/activate\"]\npro_items[\"/items/pro/\"]\n\ncurrent_user --> active_user\nactive_user --> admin_user\nactive_user --> paying_user\n\ncurrent_user --> public\nactive_user --> private\nadmin_user --> activate_user\npaying_user --> pro_items"
+  },
+  {
+    "id": "dependencies-013",
+    "page": "dependencies",
+    "title": "Dependencies",
+    "section": "Integrated with OpenAPI",
+    "url": "https://fastapi.tiangolo.com/tutorial/dependencies/#integrated-with-openapi_1",
+    "text": "All these dependencies, while declaring their requirements, also add parameters, validations, etc. to your path operations .\n\nFastAPI will take care of adding it all to the OpenAPI schema, so that it is shown in the interactive documentation systems."
+  },
+  {
+    "id": "background-tasks-000",
+    "page": "background-tasks",
+    "title": "Background Tasks",
+    "section": "Background Tasks",
+    "url": "https://fastapi.tiangolo.com/tutorial/background-tasks/#background-tasks",
+    "text": "You can define background tasks to be run after returning a response.\n\nThis is useful for operations that need to happen after a request, but that the client doesn't really have to be waiting for the operation to complete before receiving the response.\n\nThis includes, for example:\n\nEmail notifications sent after performing an action: As connecting to an email server and sending an email tends to be \"slow\" (several seconds), you can return the response right away and send the email notification in the background.\n\nProcessing data: For example, let's say you receive a file that must go through a slow process, you can return a response of \"Accepted\" (HTTP 202) and process the file in the background."
+  },
+  {
+    "id": "background-tasks-001",
+    "page": "background-tasks",
+    "title": "Background Tasks",
+    "section": "Using BackgroundTasks",
+    "url": "https://fastapi.tiangolo.com/tutorial/background-tasks/#using-backgroundtasks",
+    "text": "First, import BackgroundTasks and define a parameter in your path operation function with a type declaration of BackgroundTasks :\n\nfrom fastapi import BackgroundTasks, FastAPI\n\napp = FastAPI()\n\n\ndef write_notification(email: str, message=\"\"):\n    with open(\"log.txt\", mode=\"w\") as email_file:\n        content = f\"notification for {email}: {message}\"\n        email_file.write(content)\n\n\n@app.post(\"/send-notification/{email}\")\nasync def send_notification(email: str, background_tasks: BackgroundTasks):\n    background_tasks.add_task(write_notification, email, message=\"some notification\")\n    return {\"message\": \"Notification sent in the background\"}\n\nFastAPI will create the object of type BackgroundTasks for you and pass it as that parameter."
+  },
+  {
+    "id": "background-tasks-002",
+    "page": "background-tasks",
+    "title": "Background Tasks",
+    "section": "Create a task function",
+    "url": "https://fastapi.tiangolo.com/tutorial/background-tasks/#create-a-task-function",
+    "text": "Create a function to be run as the background task.\n\nIt is just a standard function that can receive parameters.\n\nIt can be an async def or normal def function, FastAPI will know how to handle it correctly.\n\nIn this case, the task function will write to a file (simulating sending an email).\n\nAnd as the write operation doesn't use async and await , we define the function with normal def :\n\nfrom fastapi import BackgroundTasks, FastAPI\n\napp = FastAPI()\n\n\ndef write_notification(email: str, message=\"\"):\n    with open(\"log.txt\", mode=\"w\") as email_file:\n        content = f\"notification for {email}: {message}\"\n        email_file.write(content)\n\n\n@app.post(\"/send-notification/{email}\")\nasync def send_notification(email: str, background_tasks: BackgroundTasks):\n    background_tasks.add_task(write_notification, email, message=\"some notification\")\n    return {\"message\": \"Notification sent in the background\"}"
+  },
+  {
+    "id": "background-tasks-003",
+    "page": "background-tasks",
+    "title": "Background Tasks",
+    "section": "Add the background task",
+    "url": "https://fastapi.tiangolo.com/tutorial/background-tasks/#add-the-background-task",
+    "text": "Inside of your path operation function , pass your task function to the background tasks object with the method .add_task() :\n\nfrom fastapi import BackgroundTasks, FastAPI\n\napp = FastAPI()\n\n\ndef write_notification(email: str, message=\"\"):\n    with open(\"log.txt\", mode=\"w\") as email_file:\n        content = f\"notification for {email}: {message}\"\n        email_file.write(content)\n\n\n@app.post(\"/send-notification/{email}\")\nasync def send_notification(email: str, background_tasks: BackgroundTasks):\n    background_tasks.add_task(write_notification, email, message=\"some notification\")\n    return {\"message\": \"Notification sent in the background\"}\n\n.add_task() receives as arguments:\n\nA task function to be run in the background ( write_notification ).\n\nAny sequence of arguments that should be passed to the task function in order ( email ).\n\nAny keyword arguments that should be passed to the task function ( message=\"some notification\" )."
+  },
+  {
+    "id": "background-tasks-004",
+    "page": "background-tasks",
+    "title": "Background Tasks",
+    "section": "Dependency Injection",
+    "url": "https://fastapi.tiangolo.com/tutorial/background-tasks/#dependency-injection",
+    "text": "Using BackgroundTasks also works with the dependency injection system, you can declare a parameter of type BackgroundTasks at multiple levels: in a path operation function , in a dependency (dependable), in a sub-dependency, etc.\n\nFastAPI knows what to do in each case and how to reuse the same object, so that all the background tasks are merged together and are run in the background afterwards:\n\nfrom typing import Annotated\n\nfrom fastapi import BackgroundTasks, Depends, FastAPI\n\napp = FastAPI()\n\n\ndef write_log(message: str):\n    with open(\"log.txt\", mode=\"a\") as log:\n        log.write(message)\n\n\ndef get_query(background_tasks: BackgroundTasks, q: str | None = None):\n    if q:\n        message = f\"found query: {q}\\n\"\n        background_tasks.add_task(write_log, message)\n    return q\n\n\n@app.post(\"/send-notification/{email}\")\nasync def send_notification(\n    email: str, background_tasks: BackgroundTasks, q: Annotated[str, Depends(get_query)]\n):\n    message = f\"message to {email}\\n\"\n    background_tasks.add_task(write_log, message)\n    return {\"message\": \"Message sent\"}\n\nTip\n\nPrefer to use the Annotated version if possible.\n\nfrom fastapi import BackgroundTasks, Depends, FastAPI\n\napp = FastAPI()\n\n\ndef write_log(message: str):\n    with open(\"log.txt\", mode=\"a\") as log:\n        log.write(message)\n\n\ndef get_query(background_tasks: BackgroundTasks, q: str | None = None):\n    if q:\n        message = f\"found query: {q}\\n\"\n        background_tasks.add_task(write_log, message)\n    return q\n\n\n@app.post(\"/send-notification/{email}\")\nasync def send_notification(\n    email: str, background_tasks: BackgroundTasks, q: str = Depends(get_query)\n):\n    message = f\"message to {email}\\n\"\n    background_tasks.add_task(write_log, message)\n    return {\"message\": \"Message sent\"}\n\nIn this example, the messages will be written to the log.txt file after the response is sent.\n\nIf there was a query in the request, it will be written to the log in a background task.\n\nAnd then another background task generated at the path operation function will write a message using the email path parameter."
+  },
+  {
+    "id": "background-tasks-005",
+    "page": "background-tasks",
+    "title": "Background Tasks",
+    "section": "Technical Details",
+    "url": "https://fastapi.tiangolo.com/tutorial/background-tasks/#technical-details",
+    "text": "The class BackgroundTasks comes directly from starlette.background .\n\nIt is imported/included directly into FastAPI so that you can import it from fastapi and avoid accidentally importing the alternative BackgroundTask (without the s at the end) from starlette.background .\n\nBy only using BackgroundTasks (and not BackgroundTask ), it's then possible to use it as a path operation function parameter and have FastAPI handle the rest for you, just like when using the Request object directly.\n\nIt's still possible to use BackgroundTask alone in FastAPI, but you have to create the object in your code and return a Starlette Response including it.\n\nYou can see more details in Starlette's official docs for Background Tasks ."
+  },
+  {
+    "id": "background-tasks-006",
+    "page": "background-tasks",
+    "title": "Background Tasks",
+    "section": "Caveat",
+    "url": "https://fastapi.tiangolo.com/tutorial/background-tasks/#caveat",
+    "text": "If you need to perform heavy background computation and you don't necessarily need it to be run by the same process (for example, you don't need to share memory, variables, etc), you might benefit from using other bigger tools like Celery .\n\nThey tend to require more complex configurations, a message/job queue manager, like RabbitMQ or Redis, but they allow you to run background tasks in multiple processes, and especially, in multiple servers.\n\nBut if you need to access variables and objects from the same FastAPI app, or you need to perform small background tasks (like sending an email notification), you can simply just use BackgroundTasks ."
+  },
+  {
+    "id": "background-tasks-007",
+    "page": "background-tasks",
+    "title": "Background Tasks",
+    "section": "Recap",
+    "url": "https://fastapi.tiangolo.com/tutorial/background-tasks/#recap",
+    "text": "Import and use BackgroundTasks with parameters in path operation functions and dependencies to add background tasks."
+  },
+  {
+    "id": "middleware-000",
+    "page": "middleware",
+    "title": "Middleware",
+    "section": "Middleware",
+    "url": "https://fastapi.tiangolo.com/tutorial/middleware/#middleware",
+    "text": "You can add middleware to FastAPI applications.\n\nA \"middleware\" is a function that works with every request before it is processed by any specific path operation . And also with every response before returning it.\n\nIt takes each request that comes to your application.\n\nIt can then do something to that request or run any needed code.\n\nThen it passes the request to be processed by the rest of the application (by some path operation ).\n\nIt then takes the response generated by the application (by some path operation ).\n\nIt can do something to that response or run any needed code.\n\nThen it returns the response .\n\nTechnical Details\n\nIf you have dependencies with yield , the exit code will run after the middleware.\n\nIf there were any background tasks (covered in the Background Tasks section, you will see it later), they will run after all the middleware."
+  },
+  {
+    "id": "middleware-001",
+    "page": "middleware",
+    "title": "Middleware",
+    "section": "Create a middleware",
+    "url": "https://fastapi.tiangolo.com/tutorial/middleware/#create-a-middleware",
+    "text": "To create a middleware you use the decorator @app.middleware(\"http\") on top of a function.\n\nThe middleware function receives:\n\nThe request .\n\nA function call_next that will receive the request as a parameter. This function will pass the request to the corresponding path operation . Then it returns the response generated by the corresponding path operation .\n\nYou can then further modify the response before returning it.\n\nimport time\n\nfrom fastapi import FastAPI, Request\n\napp = FastAPI()\n\n\n@app.middleware(\"http\")\nasync def add_process_time_header(request: Request, call_next):\n    start_time = time.perf_counter()\n    response = await call_next(request)\n    process_time = time.perf_counter() - start_time\n    response.headers[\"X-Process-Time\"] = str(process_time)\n    return response\n\nTip\n\nKeep in mind that custom proprietary headers can be added using the X- prefix .\n\nBut if you have custom headers that you want a client in a browser to be able to see, you need to add them to your CORS configurations ( CORS (Cross-Origin Resource Sharing) ) using the parameter expose_headers documented in Starlette's CORS docs .\n\nTechnical Details\n\nYou could also use from starlette.requests import Request .\n\nFastAPI provides it as a convenience for you, the developer. But it comes directly from Starlette."
+  },
+  {
+    "id": "middleware-002",
+    "page": "middleware",
+    "title": "Middleware",
+    "section": "Before and after the response",
+    "url": "https://fastapi.tiangolo.com/tutorial/middleware/#before-and-after-the-response",
+    "text": "You can add code to be run with the request ,  before any path operation receives it.\n\nAnd also after the response is generated, before returning it.\n\nFor example, you could add a custom header X-Process-Time containing the time in seconds that it took to process the request and generate a response:\n\nimport time\n\nfrom fastapi import FastAPI, Request\n\napp = FastAPI()\n\n\n@app.middleware(\"http\")\nasync def add_process_time_header(request: Request, call_next):\n    start_time = time.perf_counter()\n    response = await call_next(request)\n    process_time = time.perf_counter() - start_time\n    response.headers[\"X-Process-Time\"] = str(process_time)\n    return response\n\nTip\n\nHere we use time.perf_counter() instead of time.time() because it can be more precise for these use cases. 🤓"
+  },
+  {
+    "id": "middleware-003",
+    "page": "middleware",
+    "title": "Middleware",
+    "section": "Multiple middleware execution order",
+    "url": "https://fastapi.tiangolo.com/tutorial/middleware/#multiple-middleware-execution-order",
+    "text": "When you add multiple middlewares using either @app.middleware() decorator or app.add_middleware() method, each new middleware wraps the application, forming a stack. The last middleware added is the outermost , and the first is the innermost .\n\nOn the request path, the outermost middleware runs first.\n\nOn the response path, it runs last.\n\nFor example:\n\napp.add_middleware(MiddlewareA)\napp.add_middleware(MiddlewareB)\n\nThis results in the following execution order:\n\nRequest : MiddlewareB → MiddlewareA → route\n\nResponse : route → MiddlewareA → MiddlewareB\n\nThis stacking behavior ensures that middlewares are executed in a predictable and controllable order."
+  },
+  {
+    "id": "middleware-004",
+    "page": "middleware",
+    "title": "Middleware",
+    "section": "Other middlewares",
+    "url": "https://fastapi.tiangolo.com/tutorial/middleware/#other-middlewares",
+    "text": "You can later read more about other middlewares in the Advanced User Guide: Advanced Middleware .\n\nYou will read about how to handle CORS with a middleware in the next section."
+  },
+  {
+    "id": "cors-000",
+    "page": "cors",
+    "title": "CORS (Cross-Origin Resource Sharing)",
+    "section": "CORS (Cross-Origin Resource Sharing)",
+    "url": "https://fastapi.tiangolo.com/tutorial/cors/#cors-cross-origin-resource-sharing",
+    "text": "CORS or \"Cross-Origin Resource Sharing\" refers to the situations when a frontend running in a browser has JavaScript code that communicates with a backend, and the backend is in a different \"origin\" than the frontend."
+  },
+  {
+    "id": "cors-001",
+    "page": "cors",
+    "title": "CORS (Cross-Origin Resource Sharing)",
+    "section": "Origin",
+    "url": "https://fastapi.tiangolo.com/tutorial/cors/#origin",
+    "text": "An origin is the combination of protocol ( http , https ), domain ( myapp.com , localhost , localhost.tiangolo.com ), and port ( 80 , 443 , 8080 ).\n\nSo, all these are different origins:\n\nhttp://localhost\n\nhttps://localhost\n\nhttp://localhost:8080\n\nEven if they are all in localhost , they use different protocols or ports, so, they are different \"origins\"."
+  },
+  {
+    "id": "cors-002",
+    "page": "cors",
+    "title": "CORS (Cross-Origin Resource Sharing)",
+    "section": "Steps",
+    "url": "https://fastapi.tiangolo.com/tutorial/cors/#steps",
+    "text": "So, let's say you have a frontend running in your browser at http://localhost:8080 , and its JavaScript is trying to communicate with a backend running at http://localhost (because we don't specify a port, the browser will assume the default port 80 ).\n\nThen, the browser will send an HTTP OPTIONS request to the :80 -backend, and if the backend sends the appropriate headers authorizing the communication from this different origin ( http://localhost:8080 ) then the :8080 -browser will let the JavaScript in the frontend send its request to the :80 -backend.\n\nTo achieve this, the :80 -backend must have a list of \"allowed origins\".\n\nIn this case, the list would have to include http://localhost:8080 for the :8080 -frontend to work correctly."
+  },
+  {
+    "id": "cors-003",
+    "page": "cors",
+    "title": "CORS (Cross-Origin Resource Sharing)",
+    "section": "Wildcards",
+    "url": "https://fastapi.tiangolo.com/tutorial/cors/#wildcards",
+    "text": "It's also possible to declare the list as \"*\" (a \"wildcard\") to say that all are allowed.\n\nBut that will only allow certain types of communication, excluding everything that involves credentials: Cookies, Authorization headers like those used with Bearer Tokens, etc.\n\nSo, for everything to work correctly, it's better to specify explicitly the allowed origins."
+  },
+  {
+    "id": "cors-004",
+    "page": "cors",
+    "title": "CORS (Cross-Origin Resource Sharing)",
+    "section": "Use CORSMiddleware",
+    "url": "https://fastapi.tiangolo.com/tutorial/cors/#use-corsmiddleware",
+    "text": "You can configure it in your FastAPI application using the CORSMiddleware .\n\nImport CORSMiddleware .\n\nCreate a list of allowed origins (as strings).\n\nAdd it as a \"middleware\" to your FastAPI application.\n\nYou can also specify whether your backend allows:\n\nCredentials (Authorization headers, Cookies, etc).\n\nSpecific HTTP methods ( POST , PUT ) or all of them with the wildcard \"*\" .\n\nSpecific HTTP headers or all of them with the wildcard \"*\" .\n\nfrom fastapi import FastAPI\nfrom fastapi.middleware.cors import CORSMiddleware\n\napp = FastAPI()\n\norigins = [\n    \"http://localhost.tiangolo.com\",\n    \"https://localhost.tiangolo.com\",\n    \"http://localhost\",\n    \"http://localhost:8080\",\n]\n\napp.add_middleware(\n    CORSMiddleware,\n    allow_origins=origins,\n    allow_credentials=True,\n    allow_methods=[\"*\"],\n    allow_headers=[\"*\"],\n)\n\n\n@app.get(\"/\")\nasync def main():\n    return {\"message\": \"Hello World\"}\n\nThe default parameters used by the CORSMiddleware implementation are restrictive by default, so you'll need to explicitly enable particular origins, methods, or headers, in order for browsers to be permitted to use them in a Cross-Domain context.\n\nThe following arguments are supported:\n\nallow_origins - A list of origins that should be permitted to make cross-origin requests. E.g. ['https://example.org', 'https://www.example.org'] . You can use ['*'] to allow any origin.\n\nallow_origin_regex - A regex string to match against origins that should be permitted to make cross-origin requests. e.g. 'https://.*\\.example\\.org' .\n\nallow_methods - A list of HTTP methods that should be allowed for cross-origin requests. Defaults to ['GET'] . You can use ['*'] to allow all standard methods.\n\nallow_headers - A list of HTTP request headers that should be supported for cross-origin requests. Defaults to [] . You can use ['*'] to allow all headers. The Accept , Accept-Language , Content-Language and Content-Type headers are always allowed for simple CORS requests .\n\nallow_credentials - Indicate that cookies should be supported for cross-origin requests. Defaults to False . None of allow_origins , allow_methods and allow_headers can be set to ['*'] if allow_credentials is set to True . All of them must be explicitly specified .\n\nexpose_headers - Indicate any response headers that should be made accessible to the browser. Defaults to [] ."
+  },
+  {
+    "id": "cors-005",
+    "page": "cors",
+    "title": "CORS (Cross-Origin Resource Sharing)",
+    "section": "Use CORSMiddleware",
+    "url": "https://fastapi.tiangolo.com/tutorial/cors/#use-corsmiddleware",
+    "text": "expose_headers - Indicate any response headers that should be made accessible to the browser. Defaults to [] .\n\nmax_age - Sets a maximum time in seconds for browsers to cache CORS responses. Defaults to 600 .\n\nThe middleware responds to two particular types of HTTP request..."
+  },
+  {
+    "id": "cors-006",
+    "page": "cors",
+    "title": "CORS (Cross-Origin Resource Sharing)",
+    "section": "CORS preflight requests",
+    "url": "https://fastapi.tiangolo.com/tutorial/cors/#cors-preflight-requests",
+    "text": "These are any OPTIONS request with Origin and Access-Control-Request-Method headers.\n\nIn this case the middleware will intercept the incoming request and respond with appropriate CORS headers, and either a 200 or 400 response for informational purposes."
+  },
+  {
+    "id": "cors-007",
+    "page": "cors",
+    "title": "CORS (Cross-Origin Resource Sharing)",
+    "section": "Simple requests",
+    "url": "https://fastapi.tiangolo.com/tutorial/cors/#simple-requests",
+    "text": "Any request with an Origin header. In this case the middleware will pass the request through as normal, but will include appropriate CORS headers on the response."
+  },
+  {
+    "id": "cors-008",
+    "page": "cors",
+    "title": "CORS (Cross-Origin Resource Sharing)",
+    "section": "More info",
+    "url": "https://fastapi.tiangolo.com/tutorial/cors/#more-info",
+    "text": "For more info about CORS , check the Mozilla CORS documentation .\n\nTechnical Details\n\nYou could also use from starlette.middleware.cors import CORSMiddleware .\n\nFastAPI provides several middlewares in fastapi.middleware just as a convenience for you, the developer. But most of the available middlewares come directly from Starlette."
+  },
+  {
+    "id": "testing-000",
+    "page": "testing",
+    "title": "Testing",
+    "section": "Testing",
+    "url": "https://fastapi.tiangolo.com/tutorial/testing/#testing",
+    "text": "Thanks to Starlette , testing FastAPI applications is easy and enjoyable.\n\nIt is based on HTTPX , which in turn is designed based on Requests, so it's very familiar and intuitive.\n\nWith it, you can use pytest directly with FastAPI ."
+  },
+  {
+    "id": "testing-001",
+    "page": "testing",
+    "title": "Testing",
+    "section": "Using TestClient",
+    "url": "https://fastapi.tiangolo.com/tutorial/testing/#using-testclient",
+    "text": "Note\n\nTo use TestClient , first install httpx .\n\nAdd it to your project:\n\n$ uv add httpx\n\nImport TestClient .\n\nCreate a TestClient by passing your FastAPI application to it.\n\nCreate functions with a name that starts with test_ (this is a standard pytest convention).\n\nUse the TestClient object the same way as you do with httpx .\n\nWrite simple assert statements with the standard Python expressions that you need to check (again, standard pytest ).\n\nfrom fastapi import FastAPI\nfrom fastapi.testclient import TestClient\n\napp = FastAPI()\n\n\n@app.get(\"/\")\nasync def read_main():\n    return {\"msg\": \"Hello World\"}\n\n\nclient = TestClient(app)\n\n\ndef test_read_main():\n    response = client.get(\"/\")\n    assert response.status_code == 200\n    assert response.json() == {\"msg\": \"Hello World\"}\n\nTip\n\nNotice that the testing functions are normal def , not async def .\n\nAnd the calls to the client are also normal calls, not using await .\n\nThis allows you to use pytest directly without complications.\n\nTechnical Details\n\nYou could also use from starlette.testclient import TestClient .\n\nFastAPI provides the same starlette.testclient as fastapi.testclient just as a convenience for you, the developer. But it comes directly from Starlette.\n\nTip\n\nIf you want to call async functions in your tests apart from sending requests to your FastAPI application (e.g. asynchronous database functions), have a look at the Async Tests in the advanced tutorial."
+  },
+  {
+    "id": "testing-002",
+    "page": "testing",
+    "title": "Testing",
+    "section": "Separating tests",
+    "url": "https://fastapi.tiangolo.com/tutorial/testing/#separating-tests",
+    "text": "In a real application, you probably would have your tests in a different file.\n\nAnd your FastAPI application might also be composed of several files/modules, etc."
+  },
+  {
+    "id": "testing-003",
+    "page": "testing",
+    "title": "Testing",
+    "section": "FastAPI app file",
+    "url": "https://fastapi.tiangolo.com/tutorial/testing/#fastapi-app-file",
+    "text": "Let's say you have a file structure as described in Bigger Applications :\n\n.\n├── app\n│   ├── __init__.py\n│   └── main.py\n\nIn the file main.py you have your FastAPI app:\n\nfrom fastapi import FastAPI\n\napp = FastAPI()\n\n\n@app.get(\"/\")\nasync def read_main():\n    return {\"msg\": \"Hello World\"}"
+  },
+  {
+    "id": "testing-004",
+    "page": "testing",
+    "title": "Testing",
+    "section": "Testing file",
+    "url": "https://fastapi.tiangolo.com/tutorial/testing/#testing-file",
+    "text": "Then you could have a file test_main.py with your tests. It could live on the same Python package (the same directory with a __init__.py file):\n\n.\n├── app\n│   ├── __init__.py\n│   ├── main.py\n│   └── test_main.py\n\nBecause this file is in the same package, you can use relative imports to import the object app from the main module ( main.py ):\n\nfrom fastapi.testclient import TestClient\n\nfrom .main import app\n\nclient = TestClient(app)\n\n\ndef test_read_main():\n    response = client.get(\"/\")\n    assert response.status_code == 200\n    assert response.json() == {\"msg\": \"Hello World\"}\n\n...and have the code for the tests just like before."
+  },
+  {
+    "id": "testing-005",
+    "page": "testing",
+    "title": "Testing",
+    "section": "Testing: extended example",
+    "url": "https://fastapi.tiangolo.com/tutorial/testing/#testing-extended-example",
+    "text": "Now let's extend this example and add more details to see how to test different parts."
+  },
+  {
+    "id": "testing-006",
+    "page": "testing",
+    "title": "Testing",
+    "section": "Extended FastAPI app file",
+    "url": "https://fastapi.tiangolo.com/tutorial/testing/#extended-fastapi-app-file",
+    "text": "Let's continue with the same file structure as before:\n\n.\n├── app\n│   ├── __init__.py\n│   ├── main.py\n│   └── test_main.py\n\nLet's say that now the file main.py with your FastAPI app has some other path operations .\n\nIt has a GET operation that could return an error.\n\nIt has a POST operation that could return several errors.\n\nBoth path operations require an X-Token header.\n\nfrom typing import Annotated\n\nfrom fastapi import FastAPI, Header, HTTPException\nfrom pydantic import BaseModel\n\nfake_secret_token = \"coneofsilence\"\n\nfake_db = {\n    \"foo\": {\"id\": \"foo\", \"title\": \"Foo\", \"description\": \"There goes my hero\"},\n    \"bar\": {\"id\": \"bar\", \"title\": \"Bar\", \"description\": \"The bartenders\"},\n}\n\napp = FastAPI()\n\n\nclass Item(BaseModel):\n    id: str\n    title: str\n    description: str | None = None\n\n\n@app.get(\"/items/{item_id}\", response_model=Item)\nasync def read_main(item_id: str, x_token: Annotated[str, Header()]):\n    if x_token != fake_secret_token:\n        raise HTTPException(status_code=400, detail=\"Invalid X-Token header\")\n    if item_id not in fake_db:\n        raise HTTPException(status_code=404, detail=\"Item not found\")\n    return fake_db[item_id]\n\n\n@app.post(\"/items/\")\nasync def create_item(item: Item, x_token: Annotated[str, Header()]) -> Item:\n    if x_token != fake_secret_token:\n        raise HTTPException(status_code=400, detail=\"Invalid X-Token header\")\n    if item.id in fake_db:\n        raise HTTPException(status_code=409, detail=\"Item already exists\")\n    fake_db[item.id] = item.model_dump()\n    return item\n\nTip\n\nPrefer to use the Annotated version if possible."
+  },
+  {
+    "id": "testing-007",
+    "page": "testing",
+    "title": "Testing",
+    "section": "Extended FastAPI app file",
+    "url": "https://fastapi.tiangolo.com/tutorial/testing/#extended-fastapi-app-file",
+    "text": "Prefer to use the Annotated version if possible.\n\nfrom fastapi import FastAPI, Header, HTTPException\nfrom pydantic import BaseModel\n\nfake_secret_token = \"coneofsilence\"\n\nfake_db = {\n    \"foo\": {\"id\": \"foo\", \"title\": \"Foo\", \"description\": \"There goes my hero\"},\n    \"bar\": {\"id\": \"bar\", \"title\": \"Bar\", \"description\": \"The bartenders\"},\n}\n\napp = FastAPI()\n\n\nclass Item(BaseModel):\n    id: str\n    title: str\n    description: str | None = None\n\n\n@app.get(\"/items/{item_id}\", response_model=Item)\nasync def read_main(item_id: str, x_token: str = Header()):\n    if x_token != fake_secret_token:\n        raise HTTPException(status_code=400, detail=\"Invalid X-Token header\")\n    if item_id not in fake_db:\n        raise HTTPException(status_code=404, detail=\"Item not found\")\n    return fake_db[item_id]\n\n\n@app.post(\"/items/\")\nasync def create_item(item: Item, x_token: str = Header()) -> Item:\n    if x_token != fake_secret_token:\n        raise HTTPException(status_code=400, detail=\"Invalid X-Token header\")\n    if item.id in fake_db:\n        raise HTTPException(status_code=409, detail=\"Item already exists\")\n    fake_db[item.id] = item.model_dump()\n    return item"
+  },
+  {
+    "id": "testing-008",
+    "page": "testing",
+    "title": "Testing",
+    "section": "Extended testing file",
+    "url": "https://fastapi.tiangolo.com/tutorial/testing/#extended-testing-file",
+    "text": "You could then update test_main.py with the extended tests:\n\nfrom fastapi.testclient import TestClient\n\nfrom .main import app\n\nclient = TestClient(app)\n\n\ndef test_read_item():\n    response = client.get(\"/items/foo\", headers={\"X-Token\": \"coneofsilence\"})\n    assert response.status_code == 200\n    assert response.json() == {\n        \"id\": \"foo\",\n        \"title\": \"Foo\",\n        \"description\": \"There goes my hero\",\n    }\n\n\ndef test_read_item_bad_token():\n    response = client.get(\"/items/foo\", headers={\"X-Token\": \"hailhydra\"})\n    assert response.status_code == 400\n    assert response.json() == {\"detail\": \"Invalid X-Token header\"}\n\n\ndef test_read_nonexistent_item():\n    response = client.get(\"/items/baz\", headers={\"X-Token\": \"coneofsilence\"})\n    assert response.status_code == 404\n    assert response.json() == {\"detail\": \"Item not found\"}\n\n\ndef test_create_item():\n    response = client.post(\n        \"/items/\",\n        headers={\"X-Token\": \"coneofsilence\"},\n        json={\"id\": \"foobar\", \"title\": \"Foo Bar\", \"description\": \"The Foo Barters\"},\n    )\n    assert response.status_code == 200\n    assert response.json() == {\n        \"id\": \"foobar\",\n        \"title\": \"Foo Bar\",\n        \"description\": \"The Foo Barters\",\n    }\n\n\ndef test_create_item_bad_token():\n    response = client.post(\n        \"/items/\",\n        headers={\"X-Token\": \"hailhydra\"},\n        json={\"id\": \"bazz\", \"title\": \"Bazz\", \"description\": \"Drop the bazz\"},\n    )\n    assert response.status_code == 400\n    assert response.json() == {\"detail\": \"Invalid X-Token header\"}\n\n\ndef test_create_existing_item():\n    response = client.post(\n        \"/items/\",\n        headers={\"X-Token\": \"coneofsilence\"},\n        json={\n            \"id\": \"foo\",\n            \"title\": \"The Foo ID Stealers\",\n            \"description\": \"There goes my stealer\",\n        },\n    )\n    assert response.status_code == 409\n    assert response.json() == {\"detail\": \"Item already exists\"}\n\nTip\n\nPrefer to use the Annotated version if possible."
+  },
+  {
+    "id": "testing-009",
+    "page": "testing",
+    "title": "Testing",
+    "section": "Extended testing file",
+    "url": "https://fastapi.tiangolo.com/tutorial/testing/#extended-testing-file",
+    "text": "Prefer to use the Annotated version if possible.\n\nfrom fastapi.testclient import TestClient\n\nfrom .main import app\n\nclient = TestClient(app)\n\n\ndef test_read_item():\n    response = client.get(\"/items/foo\", headers={\"X-Token\": \"coneofsilence\"})\n    assert response.status_code == 200\n    assert response.json() == {\n        \"id\": \"foo\",\n        \"title\": \"Foo\",\n        \"description\": \"There goes my hero\",\n    }\n\n\ndef test_read_item_bad_token():\n    response = client.get(\"/items/foo\", headers={\"X-Token\": \"hailhydra\"})\n    assert response.status_code == 400\n    assert response.json() == {\"detail\": \"Invalid X-Token header\"}\n\n\ndef test_read_nonexistent_item():\n    response = client.get(\"/items/baz\", headers={\"X-Token\": \"coneofsilence\"})\n    assert response.status_code == 404\n    assert response.json() == {\"detail\": \"Item not found\"}\n\n\ndef test_create_item():\n    response = client.post(\n        \"/items/\",\n        headers={\"X-Token\": \"coneofsilence\"},\n        json={\"id\": \"foobar\", \"title\": \"Foo Bar\", \"description\": \"The Foo Barters\"},\n    )\n    assert response.status_code == 200\n    assert response.json() == {\n        \"id\": \"foobar\",\n        \"title\": \"Foo Bar\",\n        \"description\": \"The Foo Barters\",\n    }\n\n\ndef test_create_item_bad_token():\n    response = client.post(\n        \"/items/\",\n        headers={\"X-Token\": \"hailhydra\"},\n        json={\"id\": \"bazz\", \"title\": \"Bazz\", \"description\": \"Drop the bazz\"},\n    )\n    assert response.status_code == 400\n    assert response.json() == {\"detail\": \"Invalid X-Token header\"}\n\n\ndef test_create_existing_item():\n    response = client.post(\n        \"/items/\",\n        headers={\"X-Token\": \"coneofsilence\"},\n        json={\n            \"id\": \"foo\",\n            \"title\": \"The Foo ID Stealers\",\n            \"description\": \"There goes my stealer\",\n        },\n    )\n    assert response.status_code == 409\n    assert response.json() == {\"detail\": \"Item already exists\"}\n\nWhenever you need the client to pass information in the request and you don't know how to, you can search (Google) how to do it in httpx , or even how to do it with requests , as HTTPX's design is based on Requests' design.\n\nThen you just do the same in your tests.\n\nE.g.:\n\nTo pass a path or query parameter, add it to the URL itself.\n\nTo pass a JSON body, pass a Python object (e.g. a dict ) to the parameter json .\n\nIf you need to send Form Data instead of JSON, use the data parameter instead."
+  },
+  {
+    "id": "testing-010",
+    "page": "testing",
+    "title": "Testing",
+    "section": "Extended testing file",
+    "url": "https://fastapi.tiangolo.com/tutorial/testing/#extended-testing-file",
+    "text": "If you need to send Form Data instead of JSON, use the data parameter instead.\n\nTo pass headers , use a dict in the headers parameter.\n\nFor cookies , a dict in the cookies parameter.\n\nFor more information about how to pass data to the backend (using httpx or the TestClient ) check the HTTPX documentation .\n\nNote\n\nNote that the TestClient receives data that can be converted to JSON, not Pydantic models.\n\nIf you have a Pydantic model in your test and you want to send its data to the application during testing, you can use the jsonable_encoder described in JSON Compatible Encoder ."
+  },
+  {
+    "id": "testing-011",
+    "page": "testing",
+    "title": "Testing",
+    "section": "Run it",
+    "url": "https://fastapi.tiangolo.com/tutorial/testing/#run-it",
+    "text": "After that, you just need to install pytest .\n\nAdd it to your project:\n\n$ uv add pytest\n\n---> 100%\n\nIt will detect the files and tests automatically, execute them, and report the results back to you.\n\nRun the tests with:\n\n$ uv run pytest\n\n================ test session starts ================\nplatform linux -- Python 3.6.9, pytest-5.3.5, py-1.8.1, pluggy-0.13.1\nrootdir: /home/user/code/superawesome-cli/app\nplugins: forked-1.1.3, xdist-1.31.0, cov-2.8.1\ncollected 6 items\n\n---> 100%\n\ntest_main.py <span style=\"color: green; white-space: pre;\">......                            [100%]</span>\n\n<span style=\"color: green;\">================= 1 passed in 0.03s =================</span>"
+  },
+  {
+    "id": "request-files-000",
+    "page": "request-files",
+    "title": "Request Files",
+    "section": "Request Files",
+    "url": "https://fastapi.tiangolo.com/tutorial/request-files/#request-files",
+    "text": "You can define files to be uploaded by the client using File .\n\nNote\n\nTo receive uploaded files, first install python-multipart .\n\nAdd it to your project:\n\n$ uv add python-multipart\n\nThis is because uploaded files are sent as \"form data\"."
+  },
+  {
+    "id": "request-files-001",
+    "page": "request-files",
+    "title": "Request Files",
+    "section": "Import File",
+    "url": "https://fastapi.tiangolo.com/tutorial/request-files/#import-file",
+    "text": "Import File and UploadFile from fastapi :\n\nfrom typing import Annotated\n\nfrom fastapi import FastAPI, File, UploadFile\n\napp = FastAPI()\n\n\n@app.post(\"/files/\")\nasync def create_file(file: Annotated[bytes, File()]):\n    return {\"file_size\": len(file)}\n\n\n@app.post(\"/uploadfile/\")\nasync def create_upload_file(file: UploadFile):\n    return {\"filename\": file.filename}\n\nTip\n\nPrefer to use the Annotated version if possible.\n\nfrom fastapi import FastAPI, File, UploadFile\n\napp = FastAPI()\n\n\n@app.post(\"/files/\")\nasync def create_file(file: bytes = File()):\n    return {\"file_size\": len(file)}\n\n\n@app.post(\"/uploadfile/\")\nasync def create_upload_file(file: UploadFile):\n    return {\"filename\": file.filename}"
+  },
+  {
+    "id": "request-files-002",
+    "page": "request-files",
+    "title": "Request Files",
+    "section": "Define File Parameters",
+    "url": "https://fastapi.tiangolo.com/tutorial/request-files/#define-file-parameters",
+    "text": "Create file parameters the same way you would for Body or Form :\n\nfrom typing import Annotated\n\nfrom fastapi import FastAPI, File, UploadFile\n\napp = FastAPI()\n\n\n@app.post(\"/files/\")\nasync def create_file(file: Annotated[bytes, File()]):\n    return {\"file_size\": len(file)}\n\n\n@app.post(\"/uploadfile/\")\nasync def create_upload_file(file: UploadFile):\n    return {\"filename\": file.filename}\n\nTip\n\nPrefer to use the Annotated version if possible.\n\nfrom fastapi import FastAPI, File, UploadFile\n\napp = FastAPI()\n\n\n@app.post(\"/files/\")\nasync def create_file(file: bytes = File()):\n    return {\"file_size\": len(file)}\n\n\n@app.post(\"/uploadfile/\")\nasync def create_upload_file(file: UploadFile):\n    return {\"filename\": file.filename}\n\nNote\n\nFile is a class that inherits directly from Form .\n\nBut remember that when you import Query , Path , File and others from fastapi , those are actually functions that return special classes.\n\nTip\n\nTo declare File bodies, you need to use File , because otherwise the parameters would be interpreted as query parameters or body (JSON) parameters.\n\nThe files will be uploaded as \"form data\".\n\nIf you declare the type of your path operation function parameter as bytes , FastAPI will read the file for you and you will receive the contents as bytes .\n\nKeep in mind that this means that the whole contents will be stored in memory. This will work well for small files.\n\nBut there are several cases in which you might benefit from using UploadFile ."
+  },
+  {
+    "id": "request-files-003",
+    "page": "request-files",
+    "title": "Request Files",
+    "section": "File Parameters with UploadFile",
+    "url": "https://fastapi.tiangolo.com/tutorial/request-files/#file-parameters-with-uploadfile",
+    "text": "Define a file parameter with a type of UploadFile :\n\nfrom typing import Annotated\n\nfrom fastapi import FastAPI, File, UploadFile\n\napp = FastAPI()\n\n\n@app.post(\"/files/\")\nasync def create_file(file: Annotated[bytes, File()]):\n    return {\"file_size\": len(file)}\n\n\n@app.post(\"/uploadfile/\")\nasync def create_upload_file(file: UploadFile):\n    return {\"filename\": file.filename}\n\nTip\n\nPrefer to use the Annotated version if possible.\n\nfrom fastapi import FastAPI, File, UploadFile\n\napp = FastAPI()\n\n\n@app.post(\"/files/\")\nasync def create_file(file: bytes = File()):\n    return {\"file_size\": len(file)}\n\n\n@app.post(\"/uploadfile/\")\nasync def create_upload_file(file: UploadFile):\n    return {\"filename\": file.filename}\n\nUsing UploadFile has several advantages over bytes :\n\nYou don't have to use File() in the default value of the parameter.\n\nIt uses a \"spooled\" file: A file stored in memory up to a maximum size limit, and after passing this limit it will be stored on disk.\n\nThis means that it will work well for large files like images, videos, large binaries, etc. without consuming all the memory.\n\nYou can get metadata from the uploaded file.\n\nIt has a file-like async interface.\n\nIt exposes an actual Python SpooledTemporaryFile object that you can pass directly to other libraries that expect a file-like object."
+  },
+  {
+    "id": "request-files-004",
+    "page": "request-files",
+    "title": "Request Files",
+    "section": "UploadFile",
+    "url": "https://fastapi.tiangolo.com/tutorial/request-files/#uploadfile",
+    "text": "UploadFile has the following attributes:\n\nfilename : A str with the original file name that was uploaded (e.g. myimage.jpg ).\n\ncontent_type : A str with the content type (MIME type / media type) (e.g. image/jpeg ).\n\nfile : A SpooledTemporaryFile (a file-like object). This is the actual Python file object that you can pass directly to other functions or libraries that expect a \"file-like\" object.\n\nUploadFile has the following async methods. They all call the corresponding file methods underneath (using the internal SpooledTemporaryFile ).\n\nwrite(data) : Writes data ( str or bytes ) to the file.\n\nread(size) : Reads size ( int ) bytes/characters of the file.\n\nseek(offset) : Goes to the byte position offset ( int ) in the file. E.g., await myfile.seek(0) would go to the start of the file. This is especially useful if you run await myfile.read() once and then need to read the contents again.\n\nclose() : Closes the file.\n\nAs all these methods are async methods, you need to \"await\" them.\n\nFor example, inside of an async path operation function you can get the contents with:\n\ncontents = await myfile.read()\n\nIf you are inside of a normal def path operation function , you can access the UploadFile.file directly, for example:\n\ncontents = myfile.file.read()\n\nasync Technical Details\n\nWhen you use the async methods, FastAPI runs the file methods in a threadpool and awaits for them.\n\nStarlette Technical Details\n\nFastAPI 's UploadFile inherits directly from Starlette 's UploadFile , but adds some necessary parts to make it compatible with Pydantic and the other parts of FastAPI."
+  },
+  {
+    "id": "request-files-005",
+    "page": "request-files",
+    "title": "Request Files",
+    "section": "What is \"Form Data\"",
+    "url": "https://fastapi.tiangolo.com/tutorial/request-files/#what-is-form-data",
+    "text": "The way HTML forms ( <form></form> ) send the data to the server normally uses a \"special\" encoding for that data, it's different from JSON.\n\nFastAPI will make sure to read that data from the right place instead of JSON.\n\nTechnical Details\n\nData from forms is normally encoded using the \"media type\" application/x-www-form-urlencoded when it doesn't include files.\n\nBut when the form includes files, it is encoded as multipart/form-data . If you use File , FastAPI will know it has to get the files from the correct part of the body.\n\nIf you want to read more about these encodings and form fields, head to the MDN web docs for POST .\n\nWarning\n\nYou can declare multiple File and Form parameters in a path operation , but you can't also declare Body fields that you expect to receive as JSON, as the request will have the body encoded using multipart/form-data instead of application/json .\n\nThis is not a limitation of FastAPI , it's part of the HTTP protocol."
+  },
+  {
+    "id": "request-files-006",
+    "page": "request-files",
+    "title": "Request Files",
+    "section": "Optional File Upload",
+    "url": "https://fastapi.tiangolo.com/tutorial/request-files/#optional-file-upload",
+    "text": "You can make a file optional by using standard type annotations and setting a default value of None :\n\nfrom typing import Annotated\n\nfrom fastapi import FastAPI, File, UploadFile\n\napp = FastAPI()\n\n\n@app.post(\"/files/\")\nasync def create_file(file: Annotated[bytes | None, File()] = None):\n    if not file:\n        return {\"message\": \"No file sent\"}\n    else:\n        return {\"file_size\": len(file)}\n\n\n@app.post(\"/uploadfile/\")\nasync def create_upload_file(file: UploadFile | None = None):\n    if not file:\n        return {\"message\": \"No upload file sent\"}\n    else:\n        return {\"filename\": file.filename}\n\nTip\n\nPrefer to use the Annotated version if possible.\n\nfrom fastapi import FastAPI, File, UploadFile\n\napp = FastAPI()\n\n\n@app.post(\"/files/\")\nasync def create_file(file: bytes | None = File(default=None)):\n    if not file:\n        return {\"message\": \"No file sent\"}\n    else:\n        return {\"file_size\": len(file)}\n\n\n@app.post(\"/uploadfile/\")\nasync def create_upload_file(file: UploadFile | None = None):\n    if not file:\n        return {\"message\": \"No upload file sent\"}\n    else:\n        return {\"filename\": file.filename}"
+  },
+  {
+    "id": "request-files-007",
+    "page": "request-files",
+    "title": "Request Files",
+    "section": "UploadFile with Additional Metadata",
+    "url": "https://fastapi.tiangolo.com/tutorial/request-files/#uploadfile-with-additional-metadata",
+    "text": "You can also use File() with UploadFile , for example, to set additional metadata:\n\nfrom typing import Annotated\n\nfrom fastapi import FastAPI, File, UploadFile\n\napp = FastAPI()\n\n\n@app.post(\"/files/\")\nasync def create_file(file: Annotated[bytes, File(description=\"A file read as bytes\")]):\n    return {\"file_size\": len(file)}\n\n\n@app.post(\"/uploadfile/\")\nasync def create_upload_file(\n    file: Annotated[UploadFile, File(description=\"A file read as UploadFile\")],\n):\n    return {\"filename\": file.filename}\n\nTip\n\nPrefer to use the Annotated version if possible.\n\nfrom fastapi import FastAPI, File, UploadFile\n\napp = FastAPI()\n\n\n@app.post(\"/files/\")\nasync def create_file(file: bytes = File(description=\"A file read as bytes\")):\n    return {\"file_size\": len(file)}\n\n\n@app.post(\"/uploadfile/\")\nasync def create_upload_file(\n    file: UploadFile = File(description=\"A file read as UploadFile\"),\n):\n    return {\"filename\": file.filename}"
+  },
+  {
+    "id": "request-files-008",
+    "page": "request-files",
+    "title": "Request Files",
+    "section": "Multiple File Uploads",
+    "url": "https://fastapi.tiangolo.com/tutorial/request-files/#multiple-file-uploads",
+    "text": "It's possible to upload several files at the same time.\n\nThey would be associated to the same \"form field\" sent using \"form data\".\n\nTo use that, declare a list of bytes or UploadFile :\n\nfrom typing import Annotated\n\nfrom fastapi import FastAPI, File, UploadFile\nfrom fastapi.responses import HTMLResponse\n\napp = FastAPI()\n\n\n@app.post(\"/files/\")\nasync def create_files(files: Annotated[list[bytes], File()]):\n    return {\"file_sizes\": [len(file) for file in files]}\n\n\n@app.post(\"/uploadfiles/\")\nasync def create_upload_files(files: list[UploadFile]):\n    return {\"filenames\": [file.filename for file in files]}\n\n\n@app.get(\"/\")\nasync def main():\n    content = \"\"\"\n<body>\n<form action=\"/files/\" enctype=\"multipart/form-data\" method=\"post\">\n<input name=\"files\" type=\"file\" multiple>\n<input type=\"submit\">\n</form>\n<form action=\"/uploadfiles/\" enctype=\"multipart/form-data\" method=\"post\">\n<input name=\"files\" type=\"file\" multiple>\n<input type=\"submit\">\n</form>\n</body>\n    \"\"\"\n    return HTMLResponse(content=content)\n\nTip\n\nPrefer to use the Annotated version if possible.\n\nfrom fastapi import FastAPI, File, UploadFile\nfrom fastapi.responses import HTMLResponse\n\napp = FastAPI()\n\n\n@app.post(\"/files/\")\nasync def create_files(files: list[bytes] = File()):\n    return {\"file_sizes\": [len(file) for file in files]}\n\n\n@app.post(\"/uploadfiles/\")\nasync def create_upload_files(files: list[UploadFile]):\n    return {\"filenames\": [file.filename for file in files]}\n\n\n@app.get(\"/\")\nasync def main():\n    content = \"\"\"\n<body>\n<form action=\"/files/\" enctype=\"multipart/form-data\" method=\"post\">\n<input name=\"files\" type=\"file\" multiple>\n<input type=\"submit\">\n</form>\n<form action=\"/uploadfiles/\" enctype=\"multipart/form-data\" method=\"post\">\n<input name=\"files\" type=\"file\" multiple>\n<input type=\"submit\">\n</form>\n</body>\n    \"\"\"\n    return HTMLResponse(content=content)\n\nYou will receive, as declared, a list of bytes or UploadFile s.\n\nTechnical Details\n\nYou could also use from starlette.responses import HTMLResponse .\n\nFastAPI provides the same starlette.responses as fastapi.responses just as a convenience for you, the developer. But most of the available responses come directly from Starlette."
+  },
+  {
+    "id": "request-files-009",
+    "page": "request-files",
+    "title": "Request Files",
+    "section": "Multiple File Uploads with Additional Metadata",
+    "url": "https://fastapi.tiangolo.com/tutorial/request-files/#multiple-file-uploads-with-additional-metadata",
+    "text": "And the same way as before, you can use File() to set additional parameters, even for UploadFile :\n\nfrom typing import Annotated\n\nfrom fastapi import FastAPI, File, UploadFile\nfrom fastapi.responses import HTMLResponse\n\napp = FastAPI()\n\n\n@app.post(\"/files/\")\nasync def create_files(\n    files: Annotated[list[bytes], File(description=\"Multiple files as bytes\")],\n):\n    return {\"file_sizes\": [len(file) for file in files]}\n\n\n@app.post(\"/uploadfiles/\")\nasync def create_upload_files(\n    files: Annotated[\n        list[UploadFile], File(description=\"Multiple files as UploadFile\")\n    ],\n):\n    return {\"filenames\": [file.filename for file in files]}\n\n\n@app.get(\"/\")\nasync def main():\n    content = \"\"\"\n<body>\n<form action=\"/files/\" enctype=\"multipart/form-data\" method=\"post\">\n<input name=\"files\" type=\"file\" multiple>\n<input type=\"submit\">\n</form>\n<form action=\"/uploadfiles/\" enctype=\"multipart/form-data\" method=\"post\">\n<input name=\"files\" type=\"file\" multiple>\n<input type=\"submit\">\n</form>\n</body>\n    \"\"\"\n    return HTMLResponse(content=content)\n\nTip\n\nPrefer to use the Annotated version if possible.\n\nfrom fastapi import FastAPI, File, UploadFile\nfrom fastapi.responses import HTMLResponse\n\napp = FastAPI()\n\n\n@app.post(\"/files/\")\nasync def create_files(\n    files: list[bytes] = File(description=\"Multiple files as bytes\"),\n):\n    return {\"file_sizes\": [len(file) for file in files]}\n\n\n@app.post(\"/uploadfiles/\")\nasync def create_upload_files(\n    files: list[UploadFile] = File(description=\"Multiple files as UploadFile\"),\n):\n    return {\"filenames\": [file.filename for file in files]}\n\n\n@app.get(\"/\")\nasync def main():\n    content = \"\"\"\n<body>\n<form action=\"/files/\" enctype=\"multipart/form-data\" method=\"post\">\n<input name=\"files\" type=\"file\" multiple>\n<input type=\"submit\">\n</form>\n<form action=\"/uploadfiles/\" enctype=\"multipart/form-data\" method=\"post\">\n<input name=\"files\" type=\"file\" multiple>\n<input type=\"submit\">\n</form>\n</body>\n    \"\"\"\n    return HTMLResponse(content=content)"
+  },
+  {
+    "id": "request-files-010",
+    "page": "request-files",
+    "title": "Request Files",
+    "section": "Recap",
+    "url": "https://fastapi.tiangolo.com/tutorial/request-files/#recap",
+    "text": "Use File , bytes , and UploadFile to declare files to be uploaded in the request, sent as form data."
+  }
+]

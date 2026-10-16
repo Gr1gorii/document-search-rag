@@ -2,6 +2,11 @@
 
 # document-search-rag
 
+[Hosted search demo](https://gr1gorii.github.io/document-search-rag/)
+
+The free hosted demo searches documentation excerpts in your browser. Qwen3 generation runs locally with Ollama; follow the setup below.
+
+
 The public name is `document-search-rag`. The folder and Python package are named `doclens`, as shown in the commands below.
 
 A local assistant for FastAPI documentation: ask a question, retrieve relevant excerpts, get a model response, and inspect its sources. When the evidence appears insufficient, the assistant can decline to answer. A separate search mode lets you inspect the retrieved text without generation and compare it with the RAG response.

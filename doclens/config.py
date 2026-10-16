@@ -15,6 +15,7 @@ class Settings:
     min_score: float = 2.0
     min_coverage: float = 0.6
     top_k: int = 4
+    search_only: bool = False
 
     @classmethod
     def from_env(cls) -> "Settings":
@@ -26,4 +27,5 @@ class Settings:
             corpus=Path(os.getenv("DOCLENS_CORPUS", str(ROOT / "data" / "chunks.json"))),
             ollama_url=url,
             model=os.getenv("DOCLENS_MODEL", "qwen3:1.7b"),
+            search_only=os.getenv("DOCLENS_SEARCH_ONLY", "false").lower() == "true",
         )

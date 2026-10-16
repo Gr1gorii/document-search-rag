@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>document-search-rag - FastAPI documentation assistant</title>
+  <link rel="stylesheet" href="./style.css">
+  <script type="module" src="./app.js"></script>
+</head>
+<body>
+<main>
+  <h1>document-search-rag</h1>
+  <p class="intro">Search the selected FastAPI tutorial pages in English. Run this project locally to generate answers with Qwen3.</p>
+  <form id="ask-form">
+    <label for="question">Question</label>
+    <textarea id="question" name="question" maxlength="600" minlength="3" required placeholder="How do I raise an HTTPException with a 404 status?"></textarea>
+    <div class="controls">
+      <label for="mode">Mode</label>
+      <select id="mode"><option value="search">Search excerpts only</option></select>
+      <button id="submit" type="submit">Search documentation</button>
+    </div>
+  </form>
+  <div class="examples" aria-label="Example questions">
+    <span>Examples:</span>
+    <button type="button" data-question="How do I declare a required query parameter?">Required query parameters</button>
+    <button type="button" data-question="When do background tasks run?">Background tasks</button>
+    <button type="button" data-question="How do I configure Kubernetes autoscaling for FastAPI?">Outside this corpus</button>
+  </div>
+  <section id="result" class="result" aria-label="Result" aria-live="polite">
+    <p>Enter a question to find matching excerpts.</p>
+  </section>
+  <footer>
+    <p><span id="pages">12</span> source pages / <span id="chunks">-</span> excerpts / <span id="model">Qwen3 runs locally</span><br><span id="health">Loading search index...</span></p>
+    <p>Scope: parameters, request bodies, responses, errors, dependencies, background tasks, middleware, CORS, testing and file uploads.</p>
+    <p>Results are documentation excerpts, not generated answers. Open a source link to check its context. Search runs in your browser.</p>
+    <a href="https://github.com/Gr1gorii/document-search-rag#run">Run the full assistant locally</a>
+  </footer>
+</main>
+</body>
+</html>

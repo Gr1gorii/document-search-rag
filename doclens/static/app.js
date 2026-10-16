@@ -48,7 +48,8 @@ form.addEventListener('submit', async (event) => {
   event.preventDefault();
   if (!form.reportValidity() || submit.disabled) return;
   submit.disabled = true;
-  result.replaceChildren(element('p', 'Reading the documentation… Local generation may take a few seconds.'));
+  const searchOnly = document.querySelector('#mode').value === 'search';
+  result.replaceChildren(element('p', searchOnly ? 'Searching the documentation…' : 'Reading the documentation… Local generation may take a few seconds.'));
   result.setAttribute('aria-busy', 'true');
   try {
     const response = await fetch('/api/ask', {
@@ -79,6 +80,15 @@ async function loadInfo() {
     document.querySelector('#pages').textContent = info.pages;
     document.querySelector('#chunks').textContent = info.chunks;
     document.querySelector('#model').textContent = info.model;
+    if (info.generation_available === false) {
+      document.querySelector('#mode').value = 'search';
+      document.querySelector('#mode option[value=rag]').disabled = true;
+      document.querySelector('.intro').textContent = 'Search the selected FastAPI tutorial pages. Run this project locally to generate answers with Qwen3.';
+      document.querySelector('#model').textContent = 'Qwen3 runs locally';
+      document.querySelector('#health').textContent = 'Hosted excerpt search ready';
+      submit.textContent = 'Search documentation';
+      return;
+    }
     const health = await (await fetch('/api/health')).json();
     document.querySelector('#health').textContent = health.ollama ? 'Local model ready' : 'Ollama unavailable · search is ready';
   } catch {

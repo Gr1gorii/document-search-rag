@@ -31,16 +31,19 @@ def create_app(settings: Settings | None = None, assistant: Assistant | None = N
         return FileResponse(STATIC / "index.html")
 
     @app.get("/api/info")
-    def info() -> dict[str, str | int]:
+    def info() -> dict[str, str | int | bool]:
         return {
             "model": settings.model,
             "pages": len({c.page for c in index.chunks}),
             "chunks": len(index.chunks),
             "language": "English",
+            "generation_available": not settings.search_only,
         }
 
     @app.get("/api/health")
     def health() -> dict[str, str | bool]:
+        if settings.search_only:
+            return {"corpus": True, "ollama": False, "model": settings.model}
         try:
             response = httpx.get(f"{settings.ollama_url}/api/tags", timeout=3, trust_env=False)
             response.raise_for_status()
@@ -67,6 +70,9 @@ def create_app(settings: Settings | None = None, assistant: Assistant | None = N
                 [hit.to_dict() for hit in hits],
                 round((time.perf_counter() - start) * 1000, 2),
             ).to_dict()
+        if settings.search_only:
+            raise HTTPException(503, "This hosted demo provides excerpt search only. "
+                                "Run the project locally for model answers.")
         try:
             return assistant.answer(question).to_dict()
         except OllamaError as exc:

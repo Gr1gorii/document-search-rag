@@ -2,6 +2,11 @@
 
 # document-search-rag
 
+[Demo di ricerca online](https://gr1gorii.github.io/document-search-rag/)
+
+La demo gratuita cerca estratti della documentazione nel browser. La generazione con Qwen3 funziona in locale con Ollama; segui le istruzioni qui sotto.
+
+
 Il nome pubblico è `document-search-rag`. La cartella e il pacchetto Python si chiamano `doclens`, come nei comandi qui sotto.
 
 Un assistente locale per la documentazione di FastAPI: fai una domanda, recupera i passaggi pertinenti, ottieni una risposta dal modello e consulta le fonti. Se le informazioni trovate sembrano insufficienti, l'assistente può astenersi dal rispondere. La modalità di sola ricerca permette di leggere il testo recuperato senza generazione e confrontarlo con la risposta RAG.
